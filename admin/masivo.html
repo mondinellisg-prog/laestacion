@@ -1,386 +1,742 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión Masiva de Precios - Sushi Garden</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Ajuste Masivo e Historial de Precios - Minisuper</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
-  <div class="max-w-6xl mx-auto space-y-6">
-    <header class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-800 pb-4">
-      <div>
-        <h1 class="text-2xl font-bold text-[#eb922c]">Gestión Masiva de Precios · Sushi Garden</h1>
-        <p class="text-sm text-slate-400">Edición directa en GitHub sobre content/menu.json con vista previa y fusión inteligente.</p>
-      </div>
-      <div class="flex gap-2">
-        <a href="./index.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-semibold">Ir a Sveltia CMS</a>
-        <button id="btnBackup" disabled class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-sm font-bold">Descargar Respaldo .json</button>
-      </div>
-    </header>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen pb-16">
 
-    <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <h2 class="font-bold text-lg">1. Conexión a GitHub</h2>
-        <span id="tokenBadge" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300">Verificando sesión...</span>
+  <header class="bg-stone-900 text-white py-4 px-4 shadow">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-lg sm:text-xl font-extrabold">Panel de Ajuste Masivo e Historial de Precios</h1>
+        <p class="text-xs text-stone-300">Aumentos porcentuales, fusión CSV sin perder fotos e historial en GitHub</p>
       </div>
-      <div class="grid md:grid-cols-3 gap-4">
+      <div class="flex items-center gap-2 text-xs">
+        <a href="./index.html" class="px-3 py-2 rounded-lg bg-stone-700 hover:bg-stone-600 font-semibold">Ir al CMS Visual</a>
+        <a href="../index.html" class="px-3 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 font-semibold">Ver Tienda</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- CONEXIÓN GITHUB -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h2 class="font-bold text-stone-900">1. Conexión con GitHub</h2>
+        <span id="tokenDetectBadge" class="text-xs px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 font-semibold">Verificando sesión...</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label class="block text-xs text-slate-400 mb-1">Repositorio (usuario/repo)</label>
-          <input id="ghRepo" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="tu-usuario/sushi-garden">
+          <label class="block text-xs font-bold text-stone-600 mb-1">Repositorio (usuario/repo)</label>
+          <input id="ghRepo" type="text" placeholder="usuario/repositorio" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">Rama</label>
-          <input id="ghBranch" type="text" value="main" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+          <label class="block text-xs font-bold text-stone-600 mb-1">Rama (branch)</label>
+          <input id="ghBranch" type="text" value="main" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">Token GitHub (auto-detectado si ingresaste a /admin)</label>
-          <input id="ghToken" type="password" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="ghp_... o github_pat_...">
+          <label class="block text-xs font-bold text-stone-600 mb-1">GitHub Personal Access Token</label>
+          <input id="ghToken" type="password" placeholder="github_pat_..." class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
         </div>
       </div>
-      <button id="btnLoad" class="bg-[#eb922c] hover:bg-[#cf7a1d] text-white font-bold px-5 py-2.5 rounded-lg text-sm">Cargar Menú desde GitHub</button>
-      <p id="connMsg" class="text-sm text-amber-400"></p>
+
+      <div class="mt-4 flex flex-wrap gap-2 items-center">
+        <button id="loadDataBtn" type="button" class="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold">
+          Cargar Catálogo desde GitHub
+        </button>
+        <button id="downloadBackupBtn" type="button" class="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 text-sm font-bold">
+          Descargar Respaldo .json
+        </button>
+        <span id="connectionMsg" class="text-xs text-stone-500"></span>
+      </div>
     </section>
 
-    <div id="toolsGrid" class="grid md:grid-cols-2 gap-6 opacity-50 pointer-events-none transition-opacity">
-      <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-        <h2 class="font-bold text-lg text-[#eb922c]">2A. Ajuste Porcentual Masivo</h2>
-        <div class="grid grid-cols-2 gap-3">
+    <!-- HERRAMIENTAS DE MODIFICACIÓN -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- AUMENTO PORCENTUAL -->
+      <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm space-y-4">
+        <h2 class="font-bold text-stone-900">2A. Ajuste Porcentual Masivo</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Categoría</label>
-            <select id="pctCategory" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
-              <option value="__ALL__">Todas las categorías</option>
+            <label class="block text-xs font-bold text-stone-600 mb-1">Rubro</label>
+            <select id="pctCategorySelect" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white">
+              <option value="all">Todos los rubros</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Porcentaje (% ej: 10 o -5)</label>
-            <input id="pctValue" type="number" step="0.5" value="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+            <label class="block text-xs font-bold text-stone-600 mb-1">Porcentaje (%)</label>
+            <input id="pctValueInput" type="number" step="0.5" placeholder="Ej: 10 o -5" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-stone-600 mb-1">Redondeo</label>
+            <select id="pctRoundSelect" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white">
+              <option value="100">Al $100 más cercano</option>
+              <option value="10">Al $10 más cercano</option>
+              <option value="1">Exacto ($1)</option>
+            </select>
           </div>
         </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Redondeo ARS</label>
-          <select id="pctRound" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
-            <option value="100">Redondear a $100 (ej: 41.739 a 45.900)</option>
-            <option value="10">Redondear a $10 (ej: 41.739 a 45.910)</option>
-            <option value="1">Redondear a $1 (peso exacto)</option>
-          </select>
-        </div>
-        <button id="btnPreviewPct" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-sm">Previsualizar Ajuste %</button>
+        <button id="previewPctBtn" type="button" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm">
+          Previsualizar Aumento / Baja
+        </button>
       </section>
 
-      <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-        <h2 class="font-bold text-lg text-emerald-400">2B. Importador Inteligente de CSV</h2>
-        <p class="text-xs text-slate-400">Actualiza precios existentes por ID y agrega platos nuevos sin borrar fotos, descripciones ni stock.</p>
-        <input id="csvMergeFile" type="file" accept=".csv,.txt" class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-white file:font-semibold">
-        <button id="btnPreviewCsv" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-sm">Previsualizar Fusión CSV</button>
+      <!-- FUSIÓN INTELIGENTE CSV -->
+      <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm space-y-4">
+        <h2 class="font-bold text-stone-900">2B. Importar y Fusionar CSV (por ID)</h2>
+        <p class="text-xs text-stone-600">
+          Subí un CSV con columnas <code>id</code> y <code>precio</code> (y opcionalmente <code>nombre</code>, <code>categoria</code>, <code>piezas</code>, <code>stock</code>). Actualiza precios existentes y agrega productos nuevos <strong>sin borrar fotos ni descripciones ya cargadas</strong>.
+        </p>
+        <input id="csvMergeInput" type="file" accept=".csv,text/csv" class="block w-full text-xs text-stone-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:font-bold file:bg-stone-900 file:text-white hover:file:bg-stone-800" />
+        <p id="csvMergeInfo" class="text-xs text-stone-500"></p>
       </section>
     </div>
 
-    <section id="previewSection" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-      <div class="flex flex-wrap justify-between items-center gap-3">
+    <!-- VISTA PREVIA COMPARATIVA ANTES DE GUARDAR -->
+    <section id="previewSection" class="hidden bg-white rounded-2xl border-2 border-amber-400 p-5 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="font-bold text-lg">3. Vista Previa de Cambios</h2>
-          <p id="previewSummary" class="text-sm text-slate-400"></p>
+          <h2 class="font-extrabold text-stone-900">Vista Previa de Cambios</h2>
+          <p id="previewSummary" class="text-xs text-stone-600"></p>
         </div>
-        <div class="flex gap-3">
-          <button id="btnDiscard" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-semibold">Descartar</button>
-          <button id="btnCommit" class="px-5 py-2.5 rounded-lg bg-[#eb922c] hover:bg-[#cf7a1d] text-white font-bold text-sm">Guardar Cambios en GitHub</button>
+        <div class="flex flex-wrap gap-2">
+          <button id="cancelPreviewBtn" type="button" class="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-800 text-sm font-bold">
+            Descartar
+          </button>
+          <button id="commitChangesBtn" type="button" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-extrabold shadow">
+            Confirmar y Guardar en GitHub
+          </button>
         </div>
       </div>
 
-      <div class="overflow-x-auto max-h-96 border border-slate-800 rounded-lg">
-        <table class="w-full text-sm text-left">
-          <thead class="bg-slate-800 text-slate-300 sticky top-0">
+      <div class="overflow-x-auto max-h-96 border border-stone-200 rounded-xl">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead class="bg-stone-100 text-stone-700 sticky top-0">
             <tr>
-              <th class="p-3">Plato</th>
-              <th class="p-3">Categoría</th>
-              <th class="p-3">Estado</th>
-              <th class="p-3 text-right">Precio Actual</th>
-              <th class="p-3 text-right">Precio Nuevo</th>
+              <th class="p-2.5">ID</th>
+              <th class="p-2.5">Producto</th>
+              <th class="p-2.5">Rubro</th>
+              <th class="p-2.5 text-right">Precio Anterior</th>
+              <th class="p-2.5 text-right">Precio Nuevo</th>
+              <th class="p-2.5 text-right">Dif %</th>
             </tr>
           </thead>
-          <tbody id="previewBody" class="divide-y divide-slate-800"></tbody>
+          <tbody id="previewTableBody" class="divide-y divide-stone-100"></tbody>
         </table>
       </div>
     </section>
-  </div>
+
+    <!-- HISTORIAL DE PRECIOS EN GITHUB -->
+    <section class="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="font-bold text-stone-900">3. Historial de Precios y Versiones (GitHub Commits)</h2>
+          <p class="text-xs text-stone-500">Consultá guardados anteriores (hechos desde acá o Sveltia CMS), exportá a Excel/CSV o restaurá una versión.</p>
+        </div>
+        <button id="loadHistoryBtn" type="button" class="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold">
+          Actualizar Historial
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-5 border border-stone-200 rounded-xl divide-y divide-stone-100 max-h-96 overflow-y-auto" id="commitsList">
+          <div class="p-4 text-xs text-stone-500">Conectate con GitHub para ver el historial de cambios de precios.</div>
+        </div>
+
+        <div class="lg:col-span-7 border border-stone-200 rounded-xl p-4 bg-stone-50 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div id="selectedCommitHeader" class="text-xs font-bold text-stone-700">Seleccioná una versión de la izquierda para comparar contra los precios actuales.</div>
+            <div id="historyActionsBox" class="hidden flex gap-2">
+              <button id="exportHistoryCsvBtn" type="button" class="px-3 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-white text-xs font-bold">
+                Exportar CSV (Excel)
+              </button>
+              <button id="restoreHistoryBtn" type="button" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold">
+                Previsualizar Restauración
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto max-h-72 bg-white border border-stone-200 rounded-lg">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-stone-100 text-stone-700 sticky top-0">
+                <tr>
+                  <th class="p-2">Producto</th>
+                  <th class="p-2 text-right">En esa fecha</th>
+                  <th class="p-2 text-right">Precio Actual</th>
+                  <th class="p-2 text-right">Variación</th>
+                </tr>
+              </thead>
+              <tbody id="historyCompareBody" class="divide-y divide-stone-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
   <script>
-    const MENU_PATH = 'content/menu.json';
-    const CATS_PATH = 'content/categorias.json';
-    let currentMenu = [];
-    let currentCats = [];
-    let currentMenuSha = '';
-    let draftMenu = null;
+    (function () {
+      'use strict';
 
-    function utf8ToBase64(str) {
-      const bytes = new TextEncoder().encode(str);
-      let bin = '';
-      bytes.forEach(b => { bin += String.fromCharCode(b); });
-      return btoa(bin);
-    }
+      let currentMenu = [];
+      let currentSha = '';
+      let categories = [];
+      let pendingMenu = null;
+      let pendingCommitMessage = '';
+      let selectedHistoricalMenu = null;
+      let selectedHistoricalMeta = null;
 
-    function base64ToUtf8(b64) {
-      const bin = atob(b64.replace(/\s/g, ''));
-      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
-      return new TextDecoder().decode(bytes);
-    }
-
-    function slugify(str) {
-      return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    }
-
-    function parsePrecioARS(raw) {
-      let s = String(raw || '').replace(/[$ARS\s]/gi, '').trim();
-      if (!s) return 0;
-      if (/,\d{1,2}$/.test(s)) return Math.round(parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0);
-      if (/\.\d{3}/.test(s)) return Math.round(parseFloat(s.replace(/\./g, '')) || 0);
-      return Math.round(parseFloat(s.replace(/,/g, '')) || 0);
-    }
-
-    function parseCSVLine(line, sep) {
-      const res = [];
-      let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        if (ch === '"') {
-          if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
-          else inQ = !inQ;
-        } else if (ch === sep && !inQ) { res.push(cur.trim()); cur = ''; }
-        else cur += ch;
+      // Codificación/decodificación Base64 segura para UTF-8 y tildes
+      function utf8ToBase64(str) {
+        const bytes = new TextEncoder().encode(str);
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+        }
+        return btoa(binary);
       }
-      res.push(cur.trim());
-      return res;
-    }
 
-    function escapeHTML(str) {
-      return String(str || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-    }
+      function base64ToUtf8(b64) {
+        const clean = String(b64).replace(/\s/g, '');
+        const binary = atob(clean);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return new TextDecoder('utf-8').decode(bytes);
+      }
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const rawUser = localStorage.getItem('sveltia-cms.user');
-        if (rawUser) {
-          const parsed = JSON.parse(rawUser);
-          if (parsed && parsed.token) {
-            document.getElementById('ghToken').value = parsed.token;
-            const badge = document.getElementById('tokenBadge');
-            badge.textContent = '✓ Token detectado de Sveltia CMS';
-            badge.className = 'text-xs px-3 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700';
-          }
+      function escapeHTML(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function formatARS(num) {
+        return '$' + Math.round(Number(num) || 0).toLocaleString('es-AR');
+      }
+
+      function slugify(str) {
+        return String(str || '')
+          .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      function parseArgPrice(raw) {
+        if (typeof raw === 'number') return Math.round(raw);
+        let s = String(raw || '').replace(/\$/g, '').replace(/\s+/g, '').trim();
+        if (!s) return 0;
+        // Si tiene coma decimal argentina (ej. 29.500,00)
+        if (/,\d{1,2}$/.test(s)) {
+          s = s.replace(/\./g, '').replace(',', '.');
         } else {
-          document.getElementById('tokenBadge').textContent = 'Sin sesión Sveltia: pegá un token PAT';
+          // Solo puntos de miles (ej. 29.500)
+          s = s.replace(/\./g, '').replace(/,/g, '');
         }
-      } catch (e) {}
-
-      try {
-        const cfgText = await (await fetch('./config.yml', { cache: 'no-cache' })).text();
-        const repoMatch = cfgText.match(/repo:\s*([^\s#]+)/);
-        const branchMatch = cfgText.match(/branch:\s*([^\s#]+)/);
-        if (repoMatch && !repoMatch[1].includes('TU_USUARIO')) document.getElementById('ghRepo').value = repoMatch[1];
-        if (branchMatch) document.getElementById('ghBranch').value = branchMatch[1];
-      } catch (e) {}
-    });
-
-    async function ghFetch(path, options = {}) {
-      const repo = document.getElementById('ghRepo').value.trim();
-      const token = document.getElementById('ghToken').value.trim();
-      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-        ...options,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json',
-          ...(options.headers || {})
-        }
-      });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || `HTTP ${res.status}`);
-      }
-      return res.json();
-    }
-
-    document.getElementById('btnLoad').addEventListener('click', async () => {
-      const msg = document.getElementById('connMsg');
-      const branch = document.getElementById('ghBranch').value.trim() || 'main';
-      if (!document.getElementById('ghRepo').value.trim() || !document.getElementById('ghToken').value.trim()) {
-        return alert('Completá el repositorio y el token de GitHub.');
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : Math.round(n);
       }
 
-      msg.textContent = 'Cargando desde GitHub...';
-      try {
-        const [menuFile, catsFile] = await Promise.all([
-          ghFetch(`${MENU_PATH}?ref=${encodeURIComponent(branch)}`),
-          ghFetch(`${CATS_PATH}?ref=${encodeURIComponent(branch)}`)
-        ]);
-        currentMenuSha = menuFile.sha;
-        currentMenu = JSON.parse(base64ToUtf8(menuFile.content));
-        currentCats = JSON.parse(base64ToUtf8(catsFile.content));
-
-        const catSel = document.getElementById('pctCategory');
-        catSel.innerHTML = '<option value="__ALL__">Todas las categorías</option>';
-        currentCats.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.textContent = c.nombre;
-          catSel.appendChild(opt);
-        });
-
-        document.getElementById('toolsGrid').classList.remove('opacity-50', 'pointer-events-none');
-        document.getElementById('btnBackup').disabled = false;
-        msg.textContent = `✓ Cargados ${currentMenu.length} platos y ${currentCats.length} categorías.`;
-      } catch (err) {
-        msg.textContent = `Error: ${err.message}`;
-      }
-    });
-
-    document.getElementById('btnBackup').addEventListener('click', () => {
-      const blob = new Blob([JSON.stringify(currentMenu, null, 2)], { type: 'application/json;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `menu-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('btnPreviewPct').addEventListener('click', () => {
-      const cat = document.getElementById('pctCategory').value;
-      const pct = parseFloat(document.getElementById('pctValue').value);
-      const step = parseInt(document.getElementById('pctRound').value, 10);
-      if (isNaN(pct)) return alert('Ingresá un porcentaje válido.');
-
-      const factor = 1 + (pct / 100);
-      const rows = [];
-      draftMenu = currentMenu.map(item => {
-        if (cat !== '__ALL__' && item.categoria !== cat) return { ...item };
-        const rawNew = item.precio * factor;
-        const newPrice = Math.max(0, Math.round(rawNew / step) * step);
-        if (newPrice !== item.precio) {
-          rows.push({ nombre: item.nombre, categoria: item.categoria, tipo: 'Ajuste %', oldP: item.precio, newP: newPrice });
-        }
-        return { ...item, precio: newPrice };
-      });
-
-      showPreview(rows, `${rows.length} productos modificados (${pct >= 0 ? '+' : ''}${pct}%, redondeo $${step}).`);
-    });
-
-    document.getElementById('btnPreviewCsv').addEventListener('click', async () => {
-      const file = document.getElementById('csvMergeFile').files[0];
-      if (!file) return alert('Seleccioná un archivo CSV.');
-      const text = await file.text();
-      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-      if (lines.length < 2) return alert('CSV inválido o vacío.');
-
-      const sep = (lines[0].match(/;/g) || []).length > (lines[0].match(/,/g) || []).length ? ';' : ',';
-      const headers = parseCSVLine(lines[0], sep).map(slugify);
-      const idxId = headers.findIndex(h => h === 'id');
-      const idxProd = headers.findIndex(h => h.includes('producto') || h.includes('nombre'));
-      const idxCat = headers.findIndex(h => h.includes('categoria'));
-      const idxPrice = headers.findIndex(h => h.includes('precio'));
-
-      if (idxPrice === -1 || (idxId === -1 && idxProd === -1)) {
-        return alert('El CSV debe tener columna Precio y Producto/Nombre (o id).');
-      }
-
-      const mapById = new Map(currentMenu.map((item, idx) => [item.id, idx]));
-      draftMenu = currentMenu.map(item => ({ ...item }));
-      const rows = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const cols = parseCSVLine(lines[i], sep);
-        const nombre = idxProd > -1 ? cols[idxProd] : '';
-        const id = idxId > -1 && cols[idxId] ? slugify(cols[idxId]) : slugify(nombre);
-        const nuevoPrecio = parsePrecioARS(cols[idxPrice]);
-        if (!id || !nuevoPrecio) continue;
-
-        if (mapById.has(id)) {
-          const idx = mapById.get(id);
-          const prev = draftMenu[idx];
-          if (prev.precio !== nuevoPrecio) {
-            rows.push({ nombre: prev.nombre, categoria: prev.categoria, tipo: 'Actualizado', oldP: prev.precio, newP: nuevoPrecio });
-            draftMenu[idx].precio = nuevoPrecio;
+      async function autoDetectConfig() {
+        // 1. Detectar token de Sveltia CMS en localStorage
+        const badge = document.getElementById('tokenDetectBadge');
+        try {
+          const rawUser = localStorage.getItem('sveltia-cms.user');
+          if (rawUser) {
+            const parsed = JSON.parse(rawUser);
+            const tok = parsed.token || parsed.access_token || '';
+            if (tok) {
+              document.getElementById('ghToken').value = tok;
+              badge.textContent = 'Sesión Sveltia CMS detectada';
+              badge.className = 'text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold';
+            } else {
+              badge.textContent = 'Ingresá tu Token de GitHub';
+            }
+          } else {
+            badge.textContent = 'Sin sesión Sveltia · Pegá tu Token';
           }
-        } else if (nombre) {
-          const catSlug = idxCat > -1 && cols[idxCat] ? slugify(cols[idxCat]) : (currentCats[0]?.id || 'promos');
-          const matchP = nombre.match(/(x\d+)$/i);
-          const nuevoItem = {
-            id,
-            nombre,
-            piezas: matchP ? matchP[1].toLowerCase() : '',
-            descripcion: '',
-            precio: nuevoPrecio,
-            categoria: catSlug,
-            etiquetas: [],
-            stock: 'disponible',
-            imagen: ''
-          };
-          draftMenu.push(nuevoItem);
-          rows.push({ nombre, categoria: catSlug, tipo: 'Nuevo', oldP: 0, newP: nuevoPrecio });
+        } catch (e) {
+          badge.textContent = 'Ingresá tu Token manualmente';
+        }
+
+        // 2. Leer repo y branch desde ./config.yml
+        try {
+          const res = await fetch('./config.yml', { cache: 'no-cache' });
+          if (res.ok) {
+            const yml = await res.text();
+            const repoMatch = yml.match(/^\s*repo:\s*["']?([^"'\n#]+)["']?/m);
+            const branchMatch = yml.match(/^\s*branch:\s*["']?([^"'\n#]+)["']?/m);
+            if (repoMatch && repoMatch[1].trim() !== 'TU_USUARIO/TU_REPO') {
+              document.getElementById('ghRepo').value = repoMatch[1].trim();
+            }
+            if (branchMatch) {
+              document.getElementById('ghBranch').value = branchMatch[1].trim();
+            }
+          }
+        } catch (e) {}
+
+        // 3. Cargar categorías locales para selector
+        try {
+          const catRes = await fetch('../content/categorias.json', { cache: 'no-cache' });
+          if (catRes.ok) {
+            categories = await catRes.json();
+            const sel = document.getElementById('pctCategorySelect');
+            sel.innerHTML = '<option value="all">Todos los rubros</option>';
+            categories.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c.id;
+              opt.textContent = (c.emoji ? c.emoji + ' ' : '') + c.nombre;
+              sel.appendChild(opt);
+            });
+          }
+        } catch (e) {}
+      }
+
+      function getCreds() {
+        const repo = document.getElementById('ghRepo').value.trim();
+        const branch = document.getElementById('ghBranch').value.trim() || 'main';
+        const token = document.getElementById('ghToken').value.trim();
+        if (!repo || !repo.includes('/')) {
+          throw new Error('Indicá el repositorio en formato usuario/repo.');
+        }
+        if (!token) {
+          throw new Error('Falta el GitHub Personal Access Token.');
+        }
+        return { repo, branch, token };
+      }
+
+      async function ghFetch(url, token, options) {
+        const opts = Object.assign({}, options || {});
+        opts.headers = Object.assign({
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        }, opts.headers || {});
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error('GitHub API (' + res.status + '): ' + txt);
+        }
+        return res.json();
+      }
+
+      async function loadFromGitHub() {
+        const msg = document.getElementById('connectionMsg');
+        try {
+          const { repo, branch, token } = getCreds();
+          msg.textContent = 'Descargando menú desde GitHub...';
+          const data = await ghFetch(
+            'https://api.github.com/repos/' + repo + '/contents/content/menu.json?ref=' + encodeURIComponent(branch),
+            token
+          );
+          currentSha = data.sha;
+          currentMenu = JSON.parse(base64ToUtf8(data.content));
+          msg.textContent = 'Catálogo cargado: ' + currentMenu.length + ' productos.';
+          msg.className = 'text-xs text-emerald-700 font-semibold';
+          loadCommitsHistory();
+        } catch (err) {
+          msg.textContent = err.message;
+          msg.className = 'text-xs text-red-600 font-semibold';
         }
       }
 
-      showPreview(rows, `${rows.length} cambios detectados al fusionar por ID (fotos, descripciones y stock preservados).`);
-    });
-
-    function showPreview(rows, summaryText) {
-      document.getElementById('previewSection').classList.remove('hidden');
-      document.getElementById('previewSummary').textContent = summaryText;
-      const tbody = document.getElementById('previewBody');
-      if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No hubo cambios respecto al menú actual.</td></tr>';
-        return;
+      function roundPrice(val, step) {
+        const s = Number(step) || 1;
+        return Math.max(0, Math.round(val / s) * s);
       }
-      tbody.innerHTML = rows.map(r => `
-        <tr class="hover:bg-slate-800/50">
-          <td class="p-3 font-medium">${escapeHTML(r.nombre)}</td>
-          <td class="p-3 text-slate-400">${escapeHTML(r.categoria)}</td>
-          <td class="p-3"><span class="text-xs px-2 py-0.5 rounded bg-slate-800">${escapeHTML(r.tipo)}</span></td>
-          <td class="p-3 text-right text-slate-400">$${Number(r.oldP).toLocaleString('es-AR')}</td>
-          <td class="p-3 text-right font-bold text-[#eb922c]">$${Number(r.newP).toLocaleString('es-AR')}</td>
-        </tr>
-      `).join('');
-    }
 
-    document.getElementById('btnDiscard').addEventListener('click', () => {
-      draftMenu = null;
-      document.getElementById('previewSection').classList.add('hidden');
-    });
+      function showPreview(newMenu, commitMessage, labelSummary) {
+        pendingMenu = newMenu;
+        pendingCommitMessage = commitMessage;
 
-    document.getElementById('btnCommit').addEventListener('click', async () => {
-      if (!draftMenu) return;
-      if (!confirm('¿Confirmás publicar estos cambios en GitHub? Se actualizará la web en ~30 segundos.')) return;
-      const btn = document.getElementById('btnCommit');
-      const branch = document.getElementById('ghBranch').value.trim() || 'main';
-      btn.disabled = true;
-      btn.textContent = 'Publicando...';
+        const oldMap = new Map(currentMenu.map(i => [i.id, i]));
+        const tbody = document.getElementById('previewTableBody');
+        let html = '';
+        let changedCount = 0;
+        let addedCount = 0;
 
-      try {
-        const jsonPretty = JSON.stringify(draftMenu, null, 2) + '\n';
-        const res = await ghFetch(MENU_PATH, {
-          method: 'PUT',
-          body: JSON.stringify({
-            message: 'Actualización masiva de precios desde Panel Masivo',
-            content: utf8ToBase64(jsonPretty),
-            sha: currentMenuSha,
-            branch
-          })
+        newMenu.forEach(item => {
+          const prev = oldMap.get(item.id);
+          const oldPrice = prev ? Number(prev.precio) : null;
+          const newPrice = Number(item.precio);
+          const isChanged = oldPrice !== newPrice || !prev;
+
+          if (!prev) addedCount++;
+          else if (oldPrice !== newPrice) changedCount++;
+
+          if (!isChanged) return;
+
+          let diffStr = 'NUEVO';
+          let diffCls = 'text-sky-700 font-bold';
+          if (oldPrice !== null && oldPrice > 0) {
+            const pct = (((newPrice - oldPrice) / oldPrice) * 100).toFixed(1);
+            diffStr = (pct > 0 ? '+' : '') + pct + '%';
+            diffCls = pct > 0 ? 'text-red-600 font-bold' : 'text-emerald-700 font-bold';
+          }
+
+          html += '<tr class="hover:bg-stone-50">';
+          html += '<td class="p-2.5 font-mono text-[11px] text-stone-500">' + escapeHTML(item.id) + '</td>';
+          html += '<td class="p-2.5 font-semibold text-stone-900">' + escapeHTML(item.nombre) + '</td>';
+          html += '<td class="p-2.5 text-stone-600">' + escapeHTML(item.categoria) + '</td>';
+          html += '<td class="p-2.5 text-right text-stone-500">' + (oldPrice !== null ? formatARS(oldPrice) : '—') + '</td>';
+          html += '<td class="p-2.5 text-right font-extrabold text-stone-900">' + formatARS(newPrice) + '</td>';
+          html += '<td class="p-2.5 text-right ' + diffCls + '">' + diffStr + '</td>';
+          html += '</tr>';
         });
-        currentMenuSha = res.content.sha;
-        currentMenu = draftMenu;
-        draftMenu = null;
-        document.getElementById('previewSection').classList.add('hidden');
-        document.getElementById('connMsg').textContent = '✓ ¡Cambios publicados en GitHub correctamente!';
-        alert('¡Menú actualizado en GitHub con éxito!');
-      } catch (err) {
-        alert('Error al guardar en GitHub: ' + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Guardar Cambios en GitHub';
+
+        if (!html) {
+          html = '<tr><td colspan="6" class="p-6 text-center text-stone-500">No se detectaron diferencias de precios respecto al catálogo actual.</td></tr>';
+        }
+
+        tbody.innerHTML = html;
+        document.getElementById('previewSummary').textContent =
+          labelSummary + ' · Modificados: ' + changedCount + ' · Nuevos: ' + addedCount;
+        document.getElementById('previewSection').classList.remove('hidden');
+        document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
       }
-    });
+
+      function previewPercentage() {
+        if (currentMenu.length === 0) {
+          alert('Primero cargá el catálogo desde GitHub.');
+          return;
+        }
+        const cat = document.getElementById('pctCategorySelect').value;
+        const pct = parseFloat(document.getElementById('pctValueInput').value);
+        const step = parseInt(document.getElementById('pctRoundSelect').value, 10);
+        if (isNaN(pct) || pct === 0) {
+          alert('Ingresá un porcentaje válido distinto de 0.');
+          return;
+        }
+
+        const factor = 1 + pct / 100;
+        const updated = currentMenu.map(item => {
+          if (cat !== 'all' && item.categoria !== cat) return Object.assign({}, item);
+          return Object.assign({}, item, {
+            precio: roundPrice(Number(item.precio) * factor, step)
+          });
+        });
+
+        const scopeLabel = cat === 'all' ? 'Todos los rubros' : 'Rubro ' + cat;
+        showPreview(
+          updated,
+          'Ajuste masivo ' + (pct > 0 ? '+' : '') + pct + '% (' + scopeLabel + ')',
+          'Ajuste ' + (pct > 0 ? '+' : '') + pct + '% sobre ' + scopeLabel
+        );
+      }
+
+      // Parser CSV respetando comillas y auto-detectando ',' o ';'
+      function parseCSV(text) {
+        const firstLine = text.split(/\r?\n/)[0] || '';
+        const semiCount = (firstLine.match(/;/g) || []).length;
+        const commaCount = (firstLine.match(/,/g) || []).length;
+        const sep = semiCount >= commaCount ? ';' : ',';
+
+        const rows = [];
+        let row = [];
+        let field = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          const next = text[i + 1];
+          if (inQuotes) {
+            if (ch === '"' && next === '"') {
+              field += '"';
+              i++;
+            } else if (ch === '"') {
+              inQuotes = false;
+            } else {
+              field += ch;
+            }
+          } else {
+            if (ch === '"') {
+              inQuotes = true;
+            } else if (ch === sep) {
+              row.push(field.trim());
+              field = '';
+            } else if (ch === '\r' && next === '\n') {
+              row.push(field.trim());
+              rows.push(row);
+              row = [];
+              field = '';
+              i++;
+            } else if (ch === '\n' || ch === '\r') {
+              row.push(field.trim());
+              rows.push(row);
+              row = [];
+              field = '';
+            } else {
+              field += ch;
+            }
+          }
+        }
+        if (field.length > 0 || row.length > 0) {
+          row.push(field.trim());
+          rows.push(row);
+        }
+        return rows.filter(r => r.some(c => c !== ''));
+      }
+
+      function handleCsvMerge(file) {
+        if (currentMenu.length === 0) {
+          alert('Primero cargá el catálogo actual desde GitHub.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const rows = parseCSV(ev.target.result);
+          if (rows.length < 2) {
+            alert('El CSV no tiene filas de datos.');
+            return;
+          }
+          const headers = rows[0].map(h => slugify(h));
+          const idxId = headers.indexOf('id');
+          const idxNombre = headers.indexOf('nombre');
+          const idxPrecio = headers.indexOf('precio');
+          const idxCat = headers.indexOf('categoria');
+          const idxPiezas = headers.findIndex(h => h === 'piezas' || h === 'presentacion' || h === 'unidad');
+          const idxStock = headers.indexOf('stock');
+
+          if (idxPrecio === -1 || (idxId === -1 && idxNombre === -1)) {
+            alert('El CSV debe incluir al menos las columnas "id" (o "nombre") y "precio".');
+            return;
+          }
+
+          const merged = currentMenu.map(item => Object.assign({}, item));
+          const mapById = new Map(merged.map((item, idx) => [item.id, idx]));
+
+          let updatedCount = 0;
+          let createdCount = 0;
+
+          for (let r = 1; r < rows.length; r++) {
+            const cols = rows[r];
+            const rawId = idxId !== -1 ? cols[idxId] : '';
+            const rawName = idxNombre !== -1 ? cols[idxNombre] : '';
+            const id = slugify(rawId || rawName);
+            if (!id) continue;
+
+            const newPrice = parseArgPrice(cols[idxPrecio]);
+            if (mapById.has(id)) {
+              const target = merged[mapById.get(id)];
+              // Conserva imagen, descripción, etiquetas y stock curados en CMS
+              target.precio = newPrice;
+              if (idxStock !== -1 && cols[idxStock]) {
+                target.stock = cols[idxStock].toLowerCase() === 'agotado' ? 'agotado' : 'disponible';
+              }
+              updatedCount++;
+            } else {
+              merged.push({
+                id: id,
+                nombre: rawName || id,
+                piezas: idxPiezas !== -1 ? (cols[idxPiezas] || '') : '',
+                descripcion: '',
+                precio: newPrice,
+                categoria: idxCat !== -1 && cols[idxCat] ? slugify(cols[idxCat]) : (categories[0] ? categories[0].id : 'almacen'),
+                etiquetas: [],
+                stock: (idxStock !== -1 && cols[idxStock] && cols[idxStock].toLowerCase() === 'agotado') ? 'agotado' : 'disponible',
+                imagen: ''
+              });
+              mapById.set(id, merged.length - 1);
+              createdCount++;
+            }
+          }
+
+          document.getElementById('csvMergeInfo').textContent =
+            'CSV leído: ' + updatedCount + ' actualizados y ' + createdCount + ' nuevos.';
+          showPreview(merged, 'Fusión CSV (' + updatedCount + ' act., ' + createdCount + ' nuevos)', 'Fusión inteligente CSV');
+        };
+        reader.readAsText(file, 'UTF-8');
+      }
+
+      async function commitPendingChanges() {
+        if (!pendingMenu) return;
+        const btn = document.getElementById('commitChangesBtn');
+        btn.disabled = true;
+        btn.textContent = 'Guardando en GitHub...';
+
+        try {
+          const { repo, branch, token } = getCreds();
+          const jsonText = JSON.stringify(pendingMenu, null, 2) + '\n';
+          const res = await ghFetch('https://api.github.com/repos/' + repo + '/contents/content/menu.json', token, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: pendingCommitMessage || 'Actualización masiva de precios',
+              content: utf8ToBase64(jsonText),
+              sha: currentSha,
+              branch: branch
+            })
+          });
+
+          currentMenu = pendingMenu;
+          currentSha = res.content.sha;
+          pendingMenu = null;
+          document.getElementById('previewSection').classList.add('hidden');
+          document.getElementById('connectionMsg').textContent = '¡Cambios guardados en GitHub! Cloudflare actualizará la web en ~30s.';
+          document.getElementById('connectionMsg').className = 'text-xs text-emerald-700 font-bold';
+          loadCommitsHistory();
+        } catch (err) {
+          alert('Error al guardar en GitHub: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Confirmar y Guardar en GitHub';
+        }
+      }
+
+      async function loadCommitsHistory() {
+        const listEl = document.getElementById('commitsList');
+        try {
+          const { repo, branch, token } = getCreds();
+          const commits = await ghFetch(
+            'https://api.github.com/repos/' + repo + '/commits?path=content/menu.json&sha=' + encodeURIComponent(branch) + '&per_page=20',
+            token
+          );
+
+          if (!Array.isArray(commits) || commits.length === 0) {
+            listEl.innerHTML = '<div class="p-4 text-xs text-stone-500">Sin historial de commits todavía.</div>';
+            return;
+          }
+
+          listEl.innerHTML = '';
+          commits.forEach(c => {
+            const dt = new Date(c.commit.author.date);
+            const dateStr = dt.toLocaleDateString('es-AR') + ' ' + dt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full text-left p-3 hover:bg-stone-50 transition-colors block';
+            btn.innerHTML =
+              '<div class="text-xs font-bold text-stone-900 truncate">' + escapeHTML(c.commit.message) + '</div>' +
+              '<div class="text-[11px] text-stone-500 mt-0.5">' + escapeHTML(dateStr) + ' · ' + escapeHTML(c.sha.slice(0, 7)) + '</div>';
+            btn.addEventListener('click', () => inspectCommit(c.sha, dateStr, c.commit.message));
+            listEl.appendChild(btn);
+          });
+        } catch (err) {
+          listEl.innerHTML = '<div class="p-4 text-xs text-red-600">' + escapeHTML(err.message) + '</div>';
+        }
+      }
+
+      async function inspectCommit(sha, dateStr, message) {
+        const headerEl = document.getElementById('selectedCommitHeader');
+        const tbody = document.getElementById('historyCompareBody');
+        headerEl.textContent = 'Cargando versión ' + sha.slice(0, 7) + '...';
+
+        try {
+          const { repo, token } = getCreds();
+          const data = await ghFetch(
+            'https://api.github.com/repos/' + repo + '/contents/content/menu.json?ref=' + encodeURIComponent(sha),
+            token
+          );
+          const histMenu = JSON.parse(base64ToUtf8(data.content));
+          selectedHistoricalMenu = histMenu;
+          selectedHistoricalMeta = { sha, dateStr, message };
+
+          const currentMap = new Map(currentMenu.map(i => [i.id, i]));
+          let html = '';
+
+          histMenu.forEach(hItem => {
+            const cur = currentMap.get(hItem.id);
+            const curPrice = cur ? Number(cur.precio) : null;
+            const histPrice = Number(hItem.precio);
+            let diffStr = '—';
+            if (curPrice !== null && histPrice > 0) {
+              const pct = (((curPrice - histPrice) / histPrice) * 100).toFixed(1);
+              diffStr = (pct > 0 ? '+' : '') + pct + '%';
+            }
+
+            html += '<tr>';
+            html += '<td class="p-2 font-medium text-stone-800">' + escapeHTML(hItem.nombre) + '</td>';
+            html += '<td class="p-2 text-right text-stone-600">' + formatARS(histPrice) + '</td>';
+            html += '<td class="p-2 text-right font-bold text-stone-900">' + (curPrice !== null ? formatARS(curPrice) : 'Eliminado') + '</td>';
+            html += '<td class="p-2 text-right font-semibold text-stone-700">' + diffStr + '</td>';
+            html += '</tr>';
+          });
+
+          tbody.innerHTML = html;
+          headerEl.textContent = dateStr + ' · ' + message;
+          document.getElementById('historyActionsBox').classList.remove('hidden');
+        } catch (err) {
+          headerEl.textContent = 'Error: ' + err.message;
+        }
+      }
+
+      function exportHistoricalCSV() {
+        if (!selectedHistoricalMenu) return;
+        const lines = ['id;nombre;piezas;categoria;precio;stock'];
+        selectedHistoricalMenu.forEach(item => {
+          const row = [
+            item.id,
+            '"' + String(item.nombre || '').replace(/"/g, '""') + '"',
+            '"' + String(item.piezas || '').replace(/"/g, '""') + '"',
+            item.categoria,
+            item.precio,
+            item.stock
+          ].join(';');
+          lines.push(row);
+        });
+        // UTF-8 con BOM para que Excel abra tildes correctamente
+        const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'precios-' + (selectedHistoricalMeta ? selectedHistoricalMeta.sha.slice(0, 7) : 'historico') + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      document.getElementById('loadDataBtn').addEventListener('click', loadFromGitHub);
+      document.getElementById('previewPctBtn').addEventListener('click', previewPercentage);
+      document.getElementById('cancelPreviewBtn').addEventListener('click', () => {
+        pendingMenu = null;
+        document.getElementById('previewSection').classList.add('hidden');
+      });
+      document.getElementById('commitChangesBtn').addEventListener('click', commitPendingChanges);
+      document.getElementById('loadHistoryBtn').addEventListener('click', loadCommitsHistory);
+      document.getElementById('exportHistoryCsvBtn').addEventListener('click', exportHistoricalCSV);
+
+      document.getElementById('restoreHistoryBtn').addEventListener('click', () => {
+        if (!selectedHistoricalMenu) return;
+        showPreview(
+          selectedHistoricalMenu,
+          'Restaurar precios de versión ' + selectedHistoricalMeta.sha.slice(0, 7) + ' (' + selectedHistoricalMeta.dateStr + ')',
+          'Restauración histórica'
+        );
+      });
+
+      document.getElementById('csvMergeInput').addEventListener('change', function (e) {
+        if (e.target.files && e.target.files[0]) {
+          handleCsvMerge(e.target.files[0]);
+        }
+      });
+
+      document.getElementById('downloadBackupBtn').addEventListener('click', () => {
+        if (currentMenu.length === 0) {
+          alert('Primero cargá el catálogo desde GitHub.');
+          return;
+        }
+        const blob = new Blob([JSON.stringify(currentMenu, null, 2)], { type: 'application/json;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'backup-menu-' + new Date().toISOString().slice(0, 10) + '.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      autoDetectConfig();
+    })();
   </script>
 </body>
 </html>

@@ -1,8 +1,42 @@
 [
-  { "id": "promos", "nombre": "Promos", "emoji": "🍣" },
-  { "id": "combos-salmon", "nombre": "Combos Salmón", "emoji": "🐟" },
-  { "id": "piezas", "nombre": "Piezas", "emoji": "🍱" },
-  { "id": "bandejas-garden", "nombre": "Bandejas Garden", "emoji": "🌸" },
-  { "id": "bandejas-deluxe", "nombre": "Bandejas Deluxe", "emoji": "💎" },
-  { "id": "woks-acompanamientos", "nombre": "Woks y Acompañamientos", "emoji": "🍜" }
+  {
+    "id": "pollo",
+    "nombre": "Pollería Fresca",
+    "emoji": "🍗"
+  },
+  {
+    "id": "cerdo",
+    "nombre": "Carnicería de Cerdo",
+    "emoji": "🥩"
+  },
+  {
+    "id": "fiambreria",
+    "nombre": "Fiambrería y Quesos",
+    "emoji": "🧀"
+  },
+  {
+    "id": "almacen",
+    "nombre": "Almacén y Despensa",
+    "emoji": "🛒"
+  },
+  {
+    "id": "panificados",
+    "nombre": "Panificados y Dulces",
+    "emoji": "🥖"
+  },
+  {
+    "id": "lacteos",
+    "nombre": "Lácteos y Huevos",
+    "emoji": "🥛"
+  },
+  {
+    "id": "bebidas-sa",
+    "nombre": "Bebidas sin Alcohol",
+    "emoji": "🥤"
+  },
+  {
+    "id": "bebidas-ca",
+    "nombre": "Cervezas y Vinos",
+    "emoji": "🍷"
+  }
 ]

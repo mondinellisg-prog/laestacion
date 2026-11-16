@@ -1,0 +1,8 @@
+[
+  { "id": "promos", "nombre": "Promos", "emoji": "🍣" },
+  { "id": "combos-salmon", "nombre": "Combos Salmón", "emoji": "🐟" },
+  { "id": "piezas", "nombre": "Piezas", "emoji": "🍱" },
+  { "id": "bandejas-garden", "nombre": "Bandejas Garden", "emoji": "🌸" },
+  { "id": "bandejas-deluxe", "nombre": "Bandejas Deluxe", "emoji": "💎" },
+  { "id": "woks-acompanamientos", "nombre": "Woks y Acompañamientos", "emoji": "🍜" }
+]

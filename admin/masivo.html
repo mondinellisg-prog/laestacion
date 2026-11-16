@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión Masiva de Precios - Sushi Garden</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <header class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-800 pb-4">
+      <div>
+        <h1 class="text-2xl font-bold text-[#eb922c]">Gestión Masiva de Precios · Sushi Garden</h1>
+        <p class="text-sm text-slate-400">Edición directa en GitHub sobre content/menu.json con vista previa y fusión inteligente.</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="./index.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-semibold">Ir a Sveltia CMS</a>
+        <button id="btnBackup" disabled class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 disabled:opacity-40 text-sm font-bold">Descargar Respaldo .json</button>
+      </div>
+    </header>
+
+    <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-lg">1. Conexión a GitHub</h2>
+        <span id="tokenBadge" class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300">Verificando sesión...</span>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Repositorio (usuario/repo)</label>
+          <input id="ghRepo" type="text" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="tu-usuario/sushi-garden">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Rama</label>
+          <input id="ghBranch" type="text" value="main" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Token GitHub (auto-detectado si ingresaste a /admin)</label>
+          <input id="ghToken" type="password" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm" placeholder="ghp_... o github_pat_...">
+        </div>
+      </div>
+      <button id="btnLoad" class="bg-[#eb922c] hover:bg-[#cf7a1d] text-white font-bold px-5 py-2.5 rounded-lg text-sm">Cargar Menú desde GitHub</button>
+      <p id="connMsg" class="text-sm text-amber-400"></p>
+    </section>
+
+    <div id="toolsGrid" class="grid md:grid-cols-2 gap-6 opacity-50 pointer-events-none transition-opacity">
+      <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h2 class="font-bold text-lg text-[#eb922c]">2A. Ajuste Porcentual Masivo</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Categoría</label>
+            <select id="pctCategory" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+              <option value="__ALL__">Todas las categorías</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Porcentaje (% ej: 10 o -5)</label>
+            <input id="pctValue" type="number" step="0.5" value="10" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Redondeo ARS</label>
+          <select id="pctRound" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
+            <option value="100">Redondear a $100 (ej: 41.739 a 45.900)</option>
+            <option value="10">Redondear a $10 (ej: 41.739 a 45.910)</option>
+            <option value="1">Redondear a $1 (peso exacto)</option>
+          </select>
+        </div>
+        <button id="btnPreviewPct" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-lg text-sm">Previsualizar Ajuste %</button>
+      </section>
+
+      <section class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h2 class="font-bold text-lg text-emerald-400">2B. Importador Inteligente de CSV</h2>
+        <p class="text-xs text-slate-400">Actualiza precios existentes por ID y agrega platos nuevos sin borrar fotos, descripciones ni stock.</p>
+        <input id="csvMergeFile" type="file" accept=".csv,.txt" class="block w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-white file:font-semibold">
+        <button id="btnPreviewCsv" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-sm">Previsualizar Fusión CSV</button>
+      </section>
+    </div>
+
+    <section id="previewSection" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+      <div class="flex flex-wrap justify-between items-center gap-3">
+        <div>
+          <h2 class="font-bold text-lg">3. Vista Previa de Cambios</h2>
+          <p id="previewSummary" class="text-sm text-slate-400"></p>
+        </div>
+        <div class="flex gap-3">
+          <button id="btnDiscard" class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-sm font-semibold">Descartar</button>
+          <button id="btnCommit" class="px-5 py-2.5 rounded-lg bg-[#eb922c] hover:bg-[#cf7a1d] text-white font-bold text-sm">Guardar Cambios en GitHub</button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto max-h-96 border border-slate-800 rounded-lg">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-800 text-slate-300 sticky top-0">
+            <tr>
+              <th class="p-3">Plato</th>
+              <th class="p-3">Categoría</th>
+              <th class="p-3">Estado</th>
+              <th class="p-3 text-right">Precio Actual</th>
+              <th class="p-3 text-right">Precio Nuevo</th>
+            </tr>
+          </thead>
+          <tbody id="previewBody" class="divide-y divide-slate-800"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const MENU_PATH = 'content/menu.json';
+    const CATS_PATH = 'content/categorias.json';
+    let currentMenu = [];
+    let currentCats = [];
+    let currentMenuSha = '';
+    let draftMenu = null;
+
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      bytes.forEach(b => { bin += String.fromCharCode(b); });
+      return btoa(bin);
+    }
+
+    function base64ToUtf8(b64) {
+      const bin = atob(b64.replace(/\s/g, ''));
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
+    }
+
+    function slugify(str) {
+      return String(str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    function parsePrecioARS(raw) {
+      let s = String(raw || '').replace(/[$ARS\s]/gi, '').trim();
+      if (!s) return 0;
+      if (/,\d{1,2}$/.test(s)) return Math.round(parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0);
+      if (/\.\d{3}/.test(s)) return Math.round(parseFloat(s.replace(/\./g, '')) || 0);
+      return Math.round(parseFloat(s.replace(/,/g, '')) || 0);
+    }
+
+    function parseCSVLine(line, sep) {
+      const res = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQ && line[i + 1] === '"') { cur += '"'; i++; }
+          else inQ = !inQ;
+        } else if (ch === sep && !inQ) { res.push(cur.trim()); cur = ''; }
+        else cur += ch;
+      }
+      res.push(cur.trim());
+      return res;
+    }
+
+    function escapeHTML(str) {
+      return String(str || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const rawUser = localStorage.getItem('sveltia-cms.user');
+        if (rawUser) {
+          const parsed = JSON.parse(rawUser);
+          if (parsed && parsed.token) {
+            document.getElementById('ghToken').value = parsed.token;
+            const badge = document.getElementById('tokenBadge');
+            badge.textContent = '✓ Token detectado de Sveltia CMS';
+            badge.className = 'text-xs px-3 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700';
+          }
+        } else {
+          document.getElementById('tokenBadge').textContent = 'Sin sesión Sveltia: pegá un token PAT';
+        }
+      } catch (e) {}
+
+      try {
+        const cfgText = await (await fetch('./config.yml', { cache: 'no-cache' })).text();
+        const repoMatch = cfgText.match(/repo:\s*([^\s#]+)/);
+        const branchMatch = cfgText.match(/branch:\s*([^\s#]+)/);
+        if (repoMatch && !repoMatch[1].includes('TU_USUARIO')) document.getElementById('ghRepo').value = repoMatch[1];
+        if (branchMatch) document.getElementById('ghBranch').value = branchMatch[1];
+      } catch (e) {}
+    });
+
+    async function ghFetch(path, options = {}) {
+      const repo = document.getElementById('ghRepo').value.trim();
+      const token = document.getElementById('ghToken').value.trim();
+      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+        ...options,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || `HTTP ${res.status}`);
+      }
+      return res.json();
+    }
+
+    document.getElementById('btnLoad').addEventListener('click', async () => {
+      const msg = document.getElementById('connMsg');
+      const branch = document.getElementById('ghBranch').value.trim() || 'main';
+      if (!document.getElementById('ghRepo').value.trim() || !document.getElementById('ghToken').value.trim()) {
+        return alert('Completá el repositorio y el token de GitHub.');
+      }
+
+      msg.textContent = 'Cargando desde GitHub...';
+      try {
+        const [menuFile, catsFile] = await Promise.all([
+          ghFetch(`${MENU_PATH}?ref=${encodeURIComponent(branch)}`),
+          ghFetch(`${CATS_PATH}?ref=${encodeURIComponent(branch)}`)
+        ]);
+        currentMenuSha = menuFile.sha;
+        currentMenu = JSON.parse(base64ToUtf8(menuFile.content));
+        currentCats = JSON.parse(base64ToUtf8(catsFile.content));
+
+        const catSel = document.getElementById('pctCategory');
+        catSel.innerHTML = '<option value="__ALL__">Todas las categorías</option>';
+        currentCats.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.nombre;
+          catSel.appendChild(opt);
+        });
+
+        document.getElementById('toolsGrid').classList.remove('opacity-50', 'pointer-events-none');
+        document.getElementById('btnBackup').disabled = false;
+        msg.textContent = `✓ Cargados ${currentMenu.length} platos y ${currentCats.length} categorías.`;
+      } catch (err) {
+        msg.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    document.getElementById('btnBackup').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(currentMenu, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `menu-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('btnPreviewPct').addEventListener('click', () => {
+      const cat = document.getElementById('pctCategory').value;
+      const pct = parseFloat(document.getElementById('pctValue').value);
+      const step = parseInt(document.getElementById('pctRound').value, 10);
+      if (isNaN(pct)) return alert('Ingresá un porcentaje válido.');
+
+      const factor = 1 + (pct / 100);
+      const rows = [];
+      draftMenu = currentMenu.map(item => {
+        if (cat !== '__ALL__' && item.categoria !== cat) return { ...item };
+        const rawNew = item.precio * factor;
+        const newPrice = Math.max(0, Math.round(rawNew / step) * step);
+        if (newPrice !== item.precio) {
+          rows.push({ nombre: item.nombre, categoria: item.categoria, tipo: 'Ajuste %', oldP: item.precio, newP: newPrice });
+        }
+        return { ...item, precio: newPrice };
+      });
+
+      showPreview(rows, `${rows.length} productos modificados (${pct >= 0 ? '+' : ''}${pct}%, redondeo $${step}).`);
+    });
+
+    document.getElementById('btnPreviewCsv').addEventListener('click', async () => {
+      const file = document.getElementById('csvMergeFile').files[0];
+      if (!file) return alert('Seleccioná un archivo CSV.');
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      if (lines.length < 2) return alert('CSV inválido o vacío.');
+
+      const sep = (lines[0].match(/;/g) || []).length > (lines[0].match(/,/g) || []).length ? ';' : ',';
+      const headers = parseCSVLine(lines[0], sep).map(slugify);
+      const idxId = headers.findIndex(h => h === 'id');
+      const idxProd = headers.findIndex(h => h.includes('producto') || h.includes('nombre'));
+      const idxCat = headers.findIndex(h => h.includes('categoria'));
+      const idxPrice = headers.findIndex(h => h.includes('precio'));
+
+      if (idxPrice === -1 || (idxId === -1 && idxProd === -1)) {
+        return alert('El CSV debe tener columna Precio y Producto/Nombre (o id).');
+      }
+
+      const mapById = new Map(currentMenu.map((item, idx) => [item.id, idx]));
+      draftMenu = currentMenu.map(item => ({ ...item }));
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const cols = parseCSVLine(lines[i], sep);
+        const nombre = idxProd > -1 ? cols[idxProd] : '';
+        const id = idxId > -1 && cols[idxId] ? slugify(cols[idxId]) : slugify(nombre);
+        const nuevoPrecio = parsePrecioARS(cols[idxPrice]);
+        if (!id || !nuevoPrecio) continue;
+
+        if (mapById.has(id)) {
+          const idx = mapById.get(id);
+          const prev = draftMenu[idx];
+          if (prev.precio !== nuevoPrecio) {
+            rows.push({ nombre: prev.nombre, categoria: prev.categoria, tipo: 'Actualizado', oldP: prev.precio, newP: nuevoPrecio });
+            draftMenu[idx].precio = nuevoPrecio;
+          }
+        } else if (nombre) {
+          const catSlug = idxCat > -1 && cols[idxCat] ? slugify(cols[idxCat]) : (currentCats[0]?.id || 'promos');
+          const matchP = nombre.match(/(x\d+)$/i);
+          const nuevoItem = {
+            id,
+            nombre,
+            piezas: matchP ? matchP[1].toLowerCase() : '',
+            descripcion: '',
+            precio: nuevoPrecio,
+            categoria: catSlug,
+            etiquetas: [],
+            stock: 'disponible',
+            imagen: ''
+          };
+          draftMenu.push(nuevoItem);
+          rows.push({ nombre, categoria: catSlug, tipo: 'Nuevo', oldP: 0, newP: nuevoPrecio });
+        }
+      }
+
+      showPreview(rows, `${rows.length} cambios detectados al fusionar por ID (fotos, descripciones y stock preservados).`);
+    });
+
+    function showPreview(rows, summaryText) {
+      document.getElementById('previewSection').classList.remove('hidden');
+      document.getElementById('previewSummary').textContent = summaryText;
+      const tbody = document.getElementById('previewBody');
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No hubo cambios respecto al menú actual.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = rows.map(r => `
+        <tr class="hover:bg-slate-800/50">
+          <td class="p-3 font-medium">${escapeHTML(r.nombre)}</td>
+          <td class="p-3 text-slate-400">${escapeHTML(r.categoria)}</td>
+          <td class="p-3"><span class="text-xs px-2 py-0.5 rounded bg-slate-800">${escapeHTML(r.tipo)}</span></td>
+          <td class="p-3 text-right text-slate-400">$${Number(r.oldP).toLocaleString('es-AR')}</td>
+          <td class="p-3 text-right font-bold text-[#eb922c]">$${Number(r.newP).toLocaleString('es-AR')}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.getElementById('btnDiscard').addEventListener('click', () => {
+      draftMenu = null;
+      document.getElementById('previewSection').classList.add('hidden');
+    });
+
+    document.getElementById('btnCommit').addEventListener('click', async () => {
+      if (!draftMenu) return;
+      if (!confirm('¿Confirmás publicar estos cambios en GitHub? Se actualizará la web en ~30 segundos.')) return;
+      const btn = document.getElementById('btnCommit');
+      const branch = document.getElementById('ghBranch').value.trim() || 'main';
+      btn.disabled = true;
+      btn.textContent = 'Publicando...';
+
+      try {
+        const jsonPretty = JSON.stringify(draftMenu, null, 2) + '\n';
+        const res = await ghFetch(MENU_PATH, {
+          method: 'PUT',
+          body: JSON.stringify({
+            message: 'Actualización masiva de precios desde Panel Masivo',
+            content: utf8ToBase64(jsonPretty),
+            sha: currentMenuSha,
+            branch
+          })
+        });
+        currentMenuSha = res.content.sha;
+        currentMenu = draftMenu;
+        draftMenu = null;
+        document.getElementById('previewSection').classList.add('hidden');
+        document.getElementById('connMsg').textContent = '✓ ¡Cambios publicados en GitHub correctamente!';
+        alert('¡Menú actualizado en GitHub con éxito!');
+      } catch (err) {
+        alert('Error al guardar en GitHub: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios en GitHub';
+      }
+    });
+  </script>
+</body>
+</html>

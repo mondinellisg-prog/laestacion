@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sushi Garden - Tu Delivery de Sushi</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { corePlugins: { preflight: false } };
+    </script>
+
+    <style>
+        :root {
+            --color-principal: #eb922c;
+            --color-texto: #333;
+            --color-fondo: #FFFFFF;
+            --color-fondo-seccion: #F5F5F5;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--color-texto);
+            background-color: var(--color-fondo);
+            overflow-x: hidden;
+            padding-top: 40px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+
+        .hello-bar {
+            background-color: var(--color-principal);
+            color: white;
+            text-align: center;
+            padding: 10px 12px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            z-index: 2000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .hello-bar:hover { background-color: #cf7a1d; }
+
+        .hero {
+            position: relative;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background-image: url('./sushi1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 1;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+        .hero-content { max-width: 650px; padding: 1rem; }
+        .hero h1 { font-size: 4rem; margin-bottom: 0.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); }
+        .hero h2 { font-size: 1.8rem; font-weight: 400; text-shadow: 1px 1px 2px rgba(0,0,0,0.7); margin-bottom: 1.5rem; }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            background: rgba(0,0,0,0.65);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-bottom: 2rem; }
+        .wa-round-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px; height: 60px;
+            background-color: #25D366;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 10px;
+        }
+        .wa-round-btn:hover { transform: scale(1.1); box-shadow: 0 6px 15px rgba(37, 211, 102, 0.5); }
+        .cta-button.primary {
+            display: inline-block;
+            background-color: var(--color-principal);
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(235, 146, 44, 0.5);
+        }
+        .cta-button.primary:hover {
+            background-color: #cf7a1d;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(235, 146, 44, 0.7);
+        }
+
+        .testimonials-section { background-color: var(--color-fondo); padding: 3rem 1rem; text-align: center; }
+        .testimonials-title { font-size: 2rem; color: var(--color-texto); margin-bottom: 2rem; font-weight: bold; }
+        .testimonials-container { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
+        .testimonial-img {
+            width: 300px; max-width: 100%; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.3s;
+        }
+        .testimonial-img:hover { transform: scale(1.03); }
+
+        .section { padding: 4rem 1rem; }
+        .section h2 { text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }
+        #delivery-section { background-color: var(--color-fondo-seccion); }
+        #delivery-zones-text { text-align: center; margin-bottom: 2rem; }
+        .map-container { position: relative; overflow: hidden; width: 100%; padding-top: 400px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .map-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 400px; border: 0; }
+        footer { background-color: #212121; color: white; text-align: center; padding: 2rem 1rem; }
+
+        .menu-item.highlight { border: 2px solid var(--color-principal); box-shadow: 0px 0px 15px rgba(235, 146, 44, 0.5); }
+        .menu-item.is-agotado { opacity: 0.55; filter: grayscale(0.6); }
+        .badge-popular {
+            background-color: var(--color-principal);
+            color: white;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 6px 0;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .badge-agotado {
+            background-color: #dc3545;
+            color: white;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 5px 0;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .menu-item-img { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .tags-row { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 10px 6px; }
+        .tag-chip {
+            font-size: 0.68rem; font-weight: bold; padding: 2px 7px;
+            border-radius: 999px; background: #3d3d3d; color: #f5b266; border: 1px solid #555;
+        }
+        .tag-chip.tag-veggie { background: #164e2e; color: #86efac; border-color: #22c55e; }
+        .tag-chip.tag-sintacc { background: #1e3a5f; color: #93c5fd; border-color: #3b82f6; }
+        .tag-chip.tag-hot { background: #5c1a1a; color: #fca5a5; border-color: #ef4444; }
+
+        #menu-section {
+            background-image: url('./tapiz.jpg');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-color: #121212;
+            color: #fff;
+            padding-top: 2rem;
+            position: relative;
+        }
+        #menu-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(18, 18, 18, 0.75);
+            z-index: 0;
+        }
+        #menu-section > * { position: relative; z-index: 1; }
+        #menu-section h2 { color: #fff; }
+        .hamburger {
+            position: fixed; top: 60px; left: 20px; z-index: 1100;
+            font-size: 2rem; color: #fff; cursor: pointer; background: rgba(0,0,0,0.45);
+            border: none; border-radius: 6px; padding: 2px 10px;
+        }
+        .sidebar {
+            width: 70%; max-width: 300px; background-color: #1a1a1a; padding: 20px;
+            overflow-y: auto; border-right: 1px solid #333; position: fixed;
+            top: 40px; left: -100%; height: calc(100% - 40px); z-index: 1200;
+            transition: left 0.3s ease-in-out;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar .close-btn { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; }
+        .sidebar h2 { font-size: 1.5rem; margin-bottom: 20px; color: #fff; }
+        .sidebar ul { list-style: none; }
+        .sidebar ul li { margin: 15px 0; font-size: 1.1rem; color: #ccc; cursor: pointer; display: flex; align-items: center; }
+        .sidebar ul li:hover, .sidebar ul li.active { color: #fff; }
+        .sidebar ul li .emoji { margin-right: 10px; }
+        .main-content {
+            width: 100%; padding: 20px 0; display: flex; flex-direction: column;
+            align-items: center; padding-bottom: 300px; padding-top: 80px;
+        }
+        .nav-tabs-container {
+            width: 100%; max-width: 1200px; overflow-x: auto; margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            position: absolute; top: 120px; left: 50%; transform: translateX(-50%);
+            z-index: 950; background-color: #121212; padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .nav-tabs-container::-webkit-scrollbar { display: none; }
+        .nav-tabs { display: flex; gap: 20px; white-space: nowrap; padding: 0 10px; }
+        .nav-tabs a {
+            color: #fff; text-decoration: none; font-size: 1.2rem; text-transform: uppercase;
+            padding: 5px 10px; border-bottom: 2px solid transparent; cursor: pointer; display: inline-block;
+        }
+        .nav-tabs a:hover, .nav-tabs a.active { border-bottom: 2px solid #eb922c; }
+        .menu-section-container { width: 100%; max-width: 1200px; flex-grow: 1; padding-top: 70px; }
+        .menu-section { display: none; flex-wrap: wrap; gap: 20px; justify-content: center; padding-bottom: 20px; }
+        .menu-section.active { display: flex; }
+        .menu-item {
+            background-color: #2a2a2a; border-radius: 10px; width: 220px; overflow: hidden;
+            transition: transform 0.3s; position: relative; display: flex; flex-direction: column;
+        }
+        .menu-item:hover { transform: scale(1.03); }
+        .menu-item .content { flex-grow: 1; display: flex; flex-direction: column; }
+        .menu-item h3 { font-size: 1.15rem; padding: 10px 10px 6px; text-transform: uppercase; }
+        .menu-item p { padding: 0 10px 8px; font-size: 0.88rem; color: #ccc; flex-grow: 1; }
+        .menu-item .price { font-size: 1.2rem; color: #eb922c; padding: 8px 10px; font-weight: bold; }
+        .menu-item.pieces .price-container { display: flex; justify-content: space-between; width: 100%; padding: 6px 10px 8px; }
+        .menu-item.pieces .price { font-size: 0.98rem; padding: 0; }
+        .add-to-order {
+            background-color: #eb922c; color: #fff; border: none; padding: 8px 10px;
+            border-radius: 5px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
+            margin: 6px 10px 10px; width: calc(100% - 20px); text-align: center;
+        }
+        .add-to-order:hover:not(:disabled) { background-color: #cf7a1d; }
+        .add-to-order:disabled { background-color: #555; cursor: not-allowed; color: #aaa; }
+        .menu-item.pieces .add-to-order + .add-to-order { margin-top: 0; }
+
+        #order-summary {
+            background-color: #1a1a1a; padding: 20px; border-radius: 10px 10px 0 0;
+            position: fixed; bottom: 0; width: 100%; max-width: 1200px;
+            left: 50%; transform: translateX(-50%); z-index: 1000;
+            max-height: 75vh; overflow-y: auto;
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+            display: flex; flex-direction: column; gap: 15px;
+            color: #fff;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+        }
+        #order-summary.collapsed { max-height: 58px; padding-top: 6px; padding-bottom: 6px; overflow: hidden; }
+        .toggle-order {
+            background-color: #eb922c; color: #fff; border: none; padding: 13px;
+            width: 100%; text-align: center; cursor: pointer; font-size: 1.05rem; font-weight: bold; border-radius: 5px;
+        }
+        #order-summary.collapsed .toggle-order { margin: 0; }
+        .toggle-order:hover { background-color: #cf7a1d; }
+        #order-summary h2 { font-size: 1.5rem; text-transform: uppercase; text-align: center; padding-bottom: 5px; border-bottom: 1px solid #444; }
+        #order-summary .order-content { display: flex; flex-direction: column; gap: 15px; }
+        #order-summary.collapsed .order-content { display: none; }
+        #order-items div {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+            border-bottom: 1px solid #333; padding-bottom: 6px; color: #f5f5f5; font-size: 0.98rem;
+        }
+        #order-items div .item-name { flex-grow: 1; margin-right: 10px; }
+        #order-items div .item-price { white-space: nowrap; font-weight: bold; margin-right: 10px; }
+        .remove-item {
+            background-color: #e63946; color: #fff; border: none; padding: 4px 10px;
+            border-radius: 50%; cursor: pointer; font-size: 0.85rem; line-height: 1; flex-shrink: 0;
+        }
+        .remove-item:hover { background-color: #d00000; }
+        .order-section { background-color: #222; padding: 15px; border-radius: 8px; }
+        .order-section label { display: block; margin-bottom: 8px; font-weight: bold; color: #ccc; }
+        .order-section input, .order-section select, .order-section textarea {
+            width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #666;
+            background-color: #333; color: #fff; font-size: 1rem;
+        }
+        #order-totals { font-size: 1.1rem; }
+        #order-totals .subtotal-line { display: flex; justify-content: space-between; color: #ccc; }
+        #final-total-container {
+            display: flex; justify-content: space-between; font-weight: bold;
+            font-size: 1.4rem; margin-top: 10px; color: #f5f5f5;
+        }
+        #final-total { color: #eb922c; }
+        #whatsapp-button button {
+            width: 100%; padding: 15px; background-color: #25D366; color: white; border: none;
+            border-radius: 8px; font-size: 1.15rem; cursor: pointer; font-weight: bold;
+        }
+        #whatsapp-button button:hover:not(:disabled) { background-color: #20b058; }
+        #whatsapp-button button:disabled { opacity: 0.6; cursor: wait; }
+
+        @media (max-width: 768px) {
+            .main-content { padding-top: 60px; }
+            .nav-tabs-container { padding: 5px 0 5px 60px; top: 100px; }
+            .menu-item { width: calc(50% - 10px); }
+            #order-summary { max-height: 68vh; padding: 10px; gap: 10px; }
+            #order-summary.collapsed { max-height: 52px; }
+            .hero h1 { font-size: 3rem; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero h2 { font-size: 1.2rem; }
+            .section h2 { font-size: 2rem; }
+            .cta-button.primary { font-size: 1.1rem; padding: 0.8rem 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hello-bar" id="helloBarBtn">
+        ¡HACE CLIC ACÁ PARA OBTENER UN 15% OFF EN TU PRIMER PEDIDO!
+    </div>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Sushi-Garden</h1>
+            <h2>Tu delivery de sushi</h2>
+
+            <div id="local-status-pill" class="status-pill" style="display:none;"></div>
+
+            <div class="cta-buttons">
+                <a href="#menu-section" class="cta-button primary">Ver Menú y Pedir Ahora</a>
+
+                <a id="hero-wa-link" href="https://api.whatsapp.com/send?phone=5491136293941" target="_blank" rel="noopener" class="wa-round-btn" aria-label="Chatear por WhatsApp">
+                    <svg viewBox="0 0 24 24" width="35" height="35" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <section class="testimonials-section">
+        <div class="container">
+            <h2 class="testimonials-title">Lo que dicen nuestros clientes</h2>
+            <div class="testimonials-container">
+                <img src="./calif.jpg" alt="Testimonio de cliente 1" class="testimonial-img">
+                <img src="./calif.jpg" alt="Testimonio de cliente 2" class="testimonial-img">
+                <img src="./calif.jpg" alt="Testimonio de cliente 3" class="testimonial-img">
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section id="menu-section" class="section">
+            <h2>Menú</h2>
+            <div id="menu-daily-banner" style="max-width:900px;margin:0 auto 1rem;display:none;background:rgba(235,146,44,0.18);border:1px solid #eb922c;border-radius:8px;padding:10px 16px;text-align:center;font-size:0.95rem;"></div>
+
+            <div class="menu-container-wrapper">
+                <button class="hamburger" onclick="toggleMenu()" aria-label="Abrir categorías">☰</button>
+                <div class="sidebar" id="sidebar">
+                    <span class="close-btn" onclick="toggleMenu()">×</span>
+                    <h2>Menú</h2>
+                    <ul id="sidebar-categories"></ul>
+                </div>
+
+                <div class="main-content">
+                    <div class="nav-tabs-container">
+                        <div class="nav-tabs" id="nav-tabs"></div>
+                    </div>
+                    <br><br>
+
+                    <div class="menu-section-container" id="menu-sections-container">
+                        <p style="text-align:center;padding:3rem;color:#ccc;">Cargando menú...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="delivery-section" class="section">
+            <div class="container">
+                <h2>Zonas de Delivery</h2>
+                <h3 id="delivery-zones-text">M.Coronado, Ciudad Jardín, Palomar, Caseros, V.Bosch, Altos de Podestá</h3>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1vVPIoDcvdT4ftfV-NDvAPDDOaBhfQR8&ehbc=2E312F&noprof=1" width="740" height="600" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>Sushi Garden &copy; 2026</strong></p>
+        <p>Dirección: Nahuel Huapi 6692, Martín Coronado</p>
+        <p>Teléfono: 11-3629-3941</p>
+        <br><br><br><br>
+    </footer>
+
+    <div id="order-summary" class="collapsed">
+        <button class="toggle-order" id="toggle-order-btn" onclick="toggleOrderPanel()">Ver / Ocultar Comanda (0)</button>
+        <div class="order-content">
+            <h2>Tu Comanda</h2>
+            <div class="order-section">
+                <label>Items Seleccionados</label>
+                <div id="order-items"><p style="text-align: center; color: #888;">Aún no has agregado productos.</p></div>
+            </div>
+            <div class="order-section">
+                <div id="order-totals">
+                    <div class="subtotal-line"><span>Subtotal (Precio de Lista):</span><span id="subtotal">$0</span></div>
+                </div>
+                <label for="payment-method" style="margin-top: 10px;">Método de Pago</label>
+                <select id="payment-method">
+                    <option value="efectivo">Efectivo (-10% dto)</option>
+                    <option value="transferencia">Transferencia (-5% dto)</option>
+                    <option value="primer-pedido">Primer Pedido (-15% dto)</option>
+                    <option value="credito">Tarjeta de Crédito (Precio de Lista)</option>
+                </select>
+                <div id="final-total-container"><span>TOTAL A PAGAR:</span><span id="final-total">$0</span></div>
+            </div>
+            <div class="order-section">
+                <label for="adicionales-text">Adicionales (Salsas, Wasabi, Palitos)</label>
+                <textarea id="adicionales-text" rows="2" placeholder="Ej: Salsa de soja, teriyaki, sin wasabi, 2 pares de palitos."></textarea>
+            </div>
+            <div class="order-section">
+                <label for="phone-number">Número de Teléfono</label>
+                <input type="tel" id="phone-number" placeholder="Ej: 1136293941">
+                <label for="delivery-method" style="margin-top: 10px;">Modo de Entrega</label>
+                <select id="delivery-method">
+                    <option value="local">Retiro por local</option>
+                    <option value="domicilio">A domicilio</option>
+                </select>
+                <label for="delivery-time-slot" id="time-slot-label" style="margin-top: 10px;">Horario de Retiro</label>
+                <select id="delivery-time-slot"></select>
+            </div>
+            <div id="delivery-details" class="order-section" style="display: none;">
+                <label for="delivery-address">Dirección de Entrega</label>
+                <input type="text" id="delivery-address" placeholder="Calle y número">
+                <label for="delivery-cross-streets" style="margin-top: 10px;">Entre Calles (Opcional)</label>
+                <input type="text" id="delivery-cross-streets" placeholder="Ej: Entre Av. Márquez y Nahuel Huapi">
+            </div>
+            <div class="order-section">
+                <label for="observaciones-text">Observaciones (Sin TACC, alergias, etc.)</label>
+                <textarea id="observaciones-text" rows="2" placeholder="Alergias, opción Sin TACC, timbre que no funciona..."></textarea>
+            </div>
+            <div id="whatsapp-button">
+                <button id="btn-checkout-wa" onclick="checkoutWhatsApp()">Confirmar y Enviar Pedido por WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let appConfig = {
+            local_abierto: true,
+            demora_estimada: '40 a 60 min',
+            aviso_del_dia: '',
+            descuento_efectivo: 10,
+            descuento_transferencia: 5,
+            descuento_primer_pedido: 15,
+            whatsapp: '5491136293941',
+            apps_script_url: ''
+        };
+        let menuCatalog = [];
+        let categoriesList = [];
+        let orderItemsList = [];
+
+        const orderItemsEl = document.getElementById('order-items');
+        const subtotalEl = document.getElementById('subtotal');
+        const finalTotalEl = document.getElementById('final-total');
+        const paymentMethodEl = document.getElementById('payment-method');
+        const deliveryMethodEl = document.getElementById('delivery-method');
+        const deliveryDetailsEl = document.getElementById('delivery-details');
+        const deliveryTimeSlotEl = document.getElementById('delivery-time-slot');
+        const timeSlotLabelEl = document.getElementById('time-slot-label');
+        const orderSummaryEl = document.getElementById('order-summary');
+        const toggleOrderBtn = document.getElementById('toggle-order-btn');
+
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/[&<>"'/]/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;', '/': '&#x2F;'
+            }[ch]));
+        }
+
+        function safeImageUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            const clean = url.trim();
+            if (/^(assets\/|\.\/assets\/|https:\/\/)/i.test(clean)) {
+                return clean.replace(/^\/+/, '');
+            }
+            return '';
+        }
+
+        function formatARS(num) {
+            return '$' + Math.round(Number(num) || 0).toLocaleString('es-AR');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            generateTimeSlots();
+            paymentMethodEl.addEventListener('change', updateOrder);
+            deliveryMethodEl.addEventListener('change', handleDeliveryChange);
+
+            await loadDynamicData();
+            updateOrder();
+
+            document.getElementById('helloBarBtn').addEventListener('click', () => {
+                const msg = encodeURIComponent(`✦ Hola Sushi Garden! Quiero usar mi cupón de descuento del ${appConfig.descuento_primer_pedido}% para mi primer pedido.`);
+                window.open(`https://api.whatsapp.com/send?phone=${appConfig.whatsapp}&text=${msg}`, '_blank', 'noopener');
+            });
+        });
+
+        async function loadDynamicData() {
+            try {
+                const [menuRes, catRes, cfgRes] = await Promise.all([
+                    fetch('./content/menu.json', { cache: 'no-cache' }),
+                    fetch('./content/categorias.json', { cache: 'no-cache' }),
+                    fetch('./content/config.json', { cache: 'no-cache' }).catch(() => null)
+                ]);
+
+                if (cfgRes && cfgRes.ok) {
+                    const loadedCfg = await cfgRes.json();
+                    appConfig = { ...appConfig, ...loadedCfg };
+                }
+                if (!menuRes.ok || !catRes.ok) throw new Error('Error cargando menú');
+
+                menuCatalog = await menuRes.json();
+                categoriesList = await catRes.json();
+
+                applyConfigUI();
+                renderMenuUI();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('menu-sections-container').innerHTML =
+                    '<p style="text-align:center;padding:2rem;color:#fca5a5;">No pudimos cargar el menú en este momento. Por favor recargá la página o escribinos por WhatsApp.</p>';
+            }
+        }
+
+        function applyConfigUI() {
+            const heroWa = document.getElementById('hero-wa-link');
+            heroWa.href = `https://api.whatsapp.com/send?phone=${encodeURIComponent(appConfig.whatsapp)}`;
+
+            const statusPill = document.getElementById('local-status-pill');
+            statusPill.style.display = 'inline-flex';
+            if (appConfig.local_abierto) {
+                statusPill.innerHTML = `<span style="color:#4ade80;">●</span> ABIERTO · Demora estimada: ${escapeHTML(appConfig.demora_estimada || '40 a 60 min')}`;
+            } else {
+                statusPill.innerHTML = `<span style="color:#f87171;">●</span> CERRADO EN ESTE MOMENTO · Podés dejarnos tu pedido programado`;
+            }
+
+            if (appConfig.aviso_del_dia) {
+                const banner = document.getElementById('menu-daily-banner');
+                banner.style.display = 'block';
+                banner.textContent = appConfig.aviso_del_dia;
+            }
+
+            paymentMethodEl.options[0].text = `Efectivo (-${appConfig.descuento_efectivo}% dto)`;
+            paymentMethodEl.options[1].text = `Transferencia (-${appConfig.descuento_transferencia}% dto)`;
+            paymentMethodEl.options[2].text = `Primer Pedido (-${appConfig.descuento_primer_pedido}% dto)`;
+        }
+
+        function renderTagChips(etiquetas) {
+            if (!Array.isArray(etiquetas) || etiquetas.length === 0) return '';
+            const visibleTags = etiquetas.filter(t => t !== 'Más Elegido' && t !== 'Favorito');
+            if (visibleTags.length === 0) return '';
+            return `<div class="tags-row">${visibleTags.map(t => {
+                const low = t.toLowerCase();
+                let cls = 'tag-chip';
+                if (low.includes('veggie')) cls += ' tag-veggie';
+                else if (low.includes('tacc')) cls += ' tag-sintacc';
+                else if (low.includes('hot')) cls += ' tag-hot';
+                return `<span class="${cls}">${escapeHTML(t)}</span>`;
+            }).join('')}</div>`;
+        }
+
+        function buildSingleCardHTML(item) {
+            const tags = Array.isArray(item.etiquetas) ? item.etiquetas : [];
+            const isPopular = tags.includes('Más Elegido') || tags.includes('Favorito');
+            const popularLabel = tags.includes('Más Elegido') ? '★ EL MÁS ELEGIDO' : '★ FAVORITO';
+            const isAgotado = item.stock === 'agotado';
+            const imgSrc = safeImageUrl(item.imagen);
+
+            return `
+                <div class="menu-item ${isPopular ? 'highlight' : ''} ${isAgotado ? 'is-agotado' : ''}">
+                    ${isAgotado ? '<div class="badge-agotado">AGOTADO</div>' : (isPopular ? `<div class="badge-popular">${popularLabel}</div>` : '')}
+                    ${imgSrc ? `<img class="menu-item-img" src="${escapeHTML(imgSrc)}" alt="${escapeHTML(item.nombre)}" loading="lazy">` : ''}
+                    <div class="content">
+                        <h3>${escapeHTML(item.nombre)}</h3>
+                        ${renderTagChips(tags)}
+                        <p>${escapeHTML(item.descripcion || '')}</p>
+                        <div class="price">${formatARS(item.precio)}</div>
+                    </div>
+                    <button class="add-to-order" ${isAgotado ? 'disabled' : ''} data-id="${escapeHTML(item.id)}">
+                        ${isAgotado ? 'Sin Stock' : 'Agregar'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function buildPairedPiecesCardHTML(itemX4, itemX8) {
+            const baseName = itemX4.nombre.replace(/\s*x4$/i, '').trim();
+            const tags = Array.isArray(itemX4.etiquetas) ? itemX4.etiquetas : [];
+            const isPopular = tags.includes('Más Elegido') || tags.includes('Favorito');
+            const popularLabel = tags.includes('Más Elegido') ? '★ EL MÁS ELEGIDO' : '★ FAVORITO';
+            const imgSrc = safeImageUrl(itemX4.imagen || itemX8.imagen);
+            const ag4 = itemX4.stock === 'agotado';
+            const ag8 = itemX8.stock === 'agotado';
+
+            return `
+                <div class="menu-item pieces ${isPopular ? 'highlight' : ''} ${(ag4 && ag8) ? 'is-agotado' : ''}">
+                    ${(ag4 && ag8) ? '<div class="badge-agotado">AGOTADO</div>' : (isPopular ? `<div class="badge-popular">${popularLabel}</div>` : '')}
+                    ${imgSrc ? `<img class="menu-item-img" src="${escapeHTML(imgSrc)}" alt="${escapeHTML(baseName)}" loading="lazy">` : ''}
+                    <h3>${escapeHTML(baseName)}</h3>
+                    ${renderTagChips(tags)}
+                    <p>${escapeHTML(itemX4.descripcion || itemX8.descripcion || '')}</p>
+                    <div class="price-container">
+                        <div class="price">x4: ${formatARS(itemX4.precio)}</div>
+                        <div class="price">x8: ${formatARS(itemX8.precio)}</div>
+                    </div>
+                    <button class="add-to-order" ${ag4 ? 'disabled' : ''} data-id="${escapeHTML(itemX4.id)}">${ag4 ? 'x4 Agotado' : 'Agregar x4'}</button>
+                    <button class="add-to-order" ${ag8 ? 'disabled' : ''} data-id="${escapeHTML(itemX8.id)}">${ag8 ? 'x8 Agotado' : 'Agregar x8'}</button>
+                </div>
+            `;
+        }
+
+        function renderMenuUI() {
+            const sidebarUl = document.getElementById('sidebar-categories');
+            const navTabs = document.getElementById('nav-tabs');
+            const sectionsContainer = document.getElementById('menu-sections-container');
+
+            sidebarUl.innerHTML = '';
+            navTabs.innerHTML = '';
+            sectionsContainer.innerHTML = '';
+
+            categoriesList.forEach((cat, idx) => {
+                const li = document.createElement('li');
+                li.className = 'category' + (idx === 0 ? ' active' : '');
+                li.dataset.section = cat.id;
+                li.innerHTML = `<span class="emoji">${escapeHTML(cat.emoji || '🍣')}</span> ${escapeHTML(cat.nombre)}`;
+                li.addEventListener('click', () => {
+                    document.getElementById('menu-section').scrollIntoView({ behavior: 'smooth' });
+                    showSection(cat.id);
+                });
+                sidebarUl.appendChild(li);
+
+                const tab = document.createElement('a');
+                tab.className = 'tab' + (idx === 0 ? ' active' : '');
+                tab.dataset.section = cat.id;
+                tab.textContent = cat.nombre;
+                tab.addEventListener('click', (e) => { e.preventDefault(); showSection(cat.id); });
+                navTabs.appendChild(tab);
+
+                const sec = document.createElement('section');
+                sec.id = cat.id;
+                sec.className = 'menu-section' + (idx === 0 ? ' active' : '');
+
+                const catItems = menuCatalog.filter(i => i.categoria === cat.id);
+                const cardsHTML = [];
+
+                for (let i = 0; i < catItems.length; i++) {
+                    const curr = catItems[i];
+                    const next = catItems[i + 1];
+                    if (
+                        /\sx4$/i.test(curr.nombre) &&
+                        next &&
+                        /\sx8$/i.test(next.nombre) &&
+                        curr.nombre.replace(/\sx4$/i, '').toLowerCase() === next.nombre.replace(/\sx8$/i, '').toLowerCase()
+                    ) {
+                        cardsHTML.push(buildPairedPiecesCardHTML(curr, next));
+                        i++;
+                    } else {
+                        cardsHTML.push(buildSingleCardHTML(curr));
+                    }
+                }
+
+                sec.innerHTML = cardsHTML.length
+                    ? cardsHTML.join('')
+                    : '<p style="color:#ccc;padding:2rem;">No hay productos en esta categoría por el momento.</p>';
+
+                sectionsContainer.appendChild(sec);
+            });
+
+            sectionsContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.add-to-order');
+                if (!btn || btn.disabled) return;
+                const item = menuCatalog.find(m => m.id === btn.dataset.id);
+                if (item) addToOrder(item.nombre, item.precio);
+            });
+        }
+
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+        function toggleOrderPanel() { orderSummaryEl.classList.toggle('collapsed'); }
+
+        function addToOrder(name, price) {
+            orderItemsList.push({ name, price: Number(price) });
+            updateOrder();
+            toggleOrderBtn.style.backgroundColor = '#25D366';
+            setTimeout(() => { toggleOrderBtn.style.backgroundColor = '#eb922c'; }, 350);
+        }
+
+        function removeFromOrder(index) {
+            orderItemsList.splice(index, 1);
+            updateOrder();
+        }
+
+        function handleDeliveryChange() {
+            if (deliveryMethodEl.value === 'domicilio') {
+                deliveryDetailsEl.style.display = 'block';
+                timeSlotLabelEl.textContent = 'Horario de Entrega';
+            } else {
+                deliveryDetailsEl.style.display = 'none';
+                timeSlotLabelEl.textContent = 'Horario de Retiro';
+            }
+        }
+
+        function calculateTotals() {
+            const subtotal = orderItemsList.reduce((acc, it) => acc + it.price, 0);
+            const pm = paymentMethodEl.value;
+            let factor = 1;
+            if (pm === 'efectivo') factor = 1 - (appConfig.descuento_efectivo / 100);
+            else if (pm === 'transferencia') factor = 1 - (appConfig.descuento_transferencia / 100);
+            else if (pm === 'primer-pedido') factor = 1 - (appConfig.descuento_primer_pedido / 100);
+            return { subtotal, finalTotal: Math.round(subtotal * factor * 100) / 100 };
+        }
+
+        function updateOrder() {
+            orderItemsEl.innerHTML = '';
+            toggleOrderBtn.textContent = `Ver / Ocultar Comanda (${orderItemsList.length})`;
+
+            if (orderItemsList.length === 0) {
+                orderItemsEl.innerHTML = '<p style="text-align: center; color: #888;">Aún no has agregado productos.</p>';
+            } else {
+                orderItemsList.forEach((item, index) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.innerHTML = `
+                        <span class="item-name">${escapeHTML(item.name)}</span>
+                        <span class="item-price">${formatARS(item.price)}</span>
+                        <button class="remove-item" type="button" onclick="removeFromOrder(${index})">×</button>
+                    `;
+                    orderItemsEl.appendChild(itemEl);
+                });
+            }
+
+            const { subtotal, finalTotal } = calculateTotals();
+            subtotalEl.textContent = formatARS(subtotal);
+            finalTotalEl.textContent = `$${finalTotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function generateTimeSlots() {
+            const startTime = 19, endTime = 23;
+            for (let h = startTime; h < endTime; h++) {
+                for (let m = 0; m < 60; m += 30) {
+                    const nextM = (m + 30) % 60;
+                    const nextH = h + (m + 30 >= 60 ? 1 : 0);
+                    if (nextH >= endTime && nextM > 0) continue;
+                    const time1 = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                    const time2 = `${String(nextH).padStart(2, '0')}:${String(nextM).padStart(2, '0')}`;
+                    const opt = document.createElement('option');
+                    opt.value = `${time1} a ${time2}`;
+                    opt.textContent = `${time1} a ${time2}`;
+                    deliveryTimeSlotEl.appendChild(opt);
+                }
+            }
+        }
+
+        async function saveOrderToSheet(orderPayload) {
+            if (!appConfig.apps_script_url || appConfig.apps_script_url.includes('REEMPLAZAR')) return;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2500);
+            try {
+                await fetch(appConfig.apps_script_url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(orderPayload),
+                    signal: controller.signal,
+                    keepalive: true
+                });
+            } catch (err) {
+                console.warn('Registro en Sheet omitido/timeout:', err.message);
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
+        async function checkoutWhatsApp() {
+            if (orderItemsList.length === 0) {
+                alert('Por favor, agrega al menos un producto a tu comanda.');
+                return;
+            }
+            const phoneNumber = document.getElementById('phone-number').value.trim();
+            if (!phoneNumber) {
+                alert('Por favor, ingresa tu número de teléfono.');
+                return;
+            }
+
+            const deliveryMethod = deliveryMethodEl.value;
+            const address = document.getElementById('delivery-address').value.trim();
+            if (deliveryMethod === 'domicilio' && !address) {
+                alert('Por favor, ingresa la dirección de entrega.');
+                return;
+            }
+
+            const crossStreets = document.getElementById('delivery-cross-streets').value.trim();
+            const adicionales = document.getElementById('adicionales-text').value.trim();
+            const observaciones = document.getElementById('observaciones-text').value.trim();
+            const paymentMethodText = paymentMethodEl.options[paymentMethodEl.selectedIndex].text;
+            const deliveryMethodText = deliveryMethodEl.options[deliveryMethodEl.selectedIndex].text;
+            const timeSlot = deliveryTimeSlotEl.value;
+            const { subtotal, finalTotal } = calculateTotals();
+            const subtotalText = formatARS(subtotal);
+            const finalTotalText = `$${finalTotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+            const idPedido = `SG-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+            const itemsText = orderItemsList.map(i => `${i.name} (${formatARS(i.price)})`).join('\n');
+
+            const btn = document.getElementById('btn-checkout-wa');
+            btn.disabled = true;
+            btn.textContent = 'Registrando pedido...';
+
+            await saveOrderToSheet({
+                action: 'crearPedido',
+                pedido: {
+                    idPedido,
+                    telefono: phoneNumber,
+                    items: itemsText,
+                    subtotal,
+                    metodoPago: paymentMethodText,
+                    totalPagado: finalTotal,
+                    modoEntrega: deliveryMethodText,
+                    direccion: deliveryMethod === 'domicilio' ? address : '',
+                    entreCalles: deliveryMethod === 'domicilio' ? crossStreets : '',
+                    horario: timeSlot,
+                    adicionales,
+                    observaciones
+                }
+            });
+
+            btn.disabled = false;
+            btn.textContent = 'Confirmar y Enviar Pedido por WhatsApp';
+
+            let message = `✦ *NUEVO PEDIDO - SUSHI GARDEN* ✦\n`;
+            message += `▪ Nro. Pedido: ${idPedido}\n\n`;
+            message += `*CLIENTE:*\n• Teléfono: ${phoneNumber}\n\n`;
+            message += `*ITEMS DEL PEDIDO:*\n`;
+            orderItemsList.forEach(item => {
+                message += `• ${item.name} (${formatARS(item.price)})\n`;
+            });
+            message += `\n*TOTALES:*\n`;
+            message += `• Subtotal: ${subtotalText}\n`;
+            message += `• Método de Pago: ${paymentMethodText}\n`;
+            message += `▪ *TOTAL A PAGAR: ${finalTotalText}*\n\n`;
+            message += `*ENTREGA:*\n`;
+            message += `• Modo: ${deliveryMethodText}\n`;
+            if (deliveryMethod === 'domicilio') {
+                message += `• Dirección: ${address}\n`;
+                if (crossStreets) message += `• Entre Calles: ${crossStreets}\n`;
+                message += `• Horario de Entrega: ${timeSlot}\n`;
+            } else {
+                message += `• Horario de Retiro: ${timeSlot}\n`;
+            }
+            if (adicionales) message += `\n*ADICIONALES:*\n${adicionales}\n`;
+            if (observaciones) message += `\n*OBSERVACIONES:*\n${observaciones}\n`;
+            message += `\n────────────────────────\nPedido generado desde sushi-garden.com.ar`;
+
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${encodeURIComponent(appConfig.whatsapp)}&text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank', 'noopener');
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.menu-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs a').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar .category').forEach(c => c.classList.remove('active'));
+
+            const sectionToShow = document.getElementById(sectionId);
+            const tabToActivate = document.querySelector(`.nav-tabs a[data-section="${sectionId}"]`);
+            const categoryToActivate = document.querySelector(`.sidebar .category[data-section="${sectionId}"]`);
+
+            if (sectionToShow) sectionToShow.classList.add('active');
+            if (categoryToActivate) categoryToActivate.classList.add('active');
+            if (tabToActivate) {
+                tabToActivate.classList.add('active');
+                const navTabsContainer = document.querySelector('.nav-tabs-container');
+                if (navTabsContainer) {
+                    const scrollPosition = tabToActivate.offsetLeft - (navTabsContainer.offsetWidth / 2) + (tabToActivate.offsetWidth / 2);
+                    navTabsContainer.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+                }
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('open')) sidebar.classList.remove('open');
+        }
+    </script>
+</body>
+</html>

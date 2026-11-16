@@ -1,10 +1,10 @@
 {
   "local_abierto": true,
-  "demora_estimada": "40 a 60 min",
-  "aviso_del_dia": "10% OFF en efectivo · 5% OFF por transferencia · 15% OFF en tu primer pedido",
-  "descuento_efectivo": 10,
-  "descuento_transferencia": 5,
-  "descuento_primer_pedido": 15,
-  "whatsapp": "5491136293941",
-  "apps_script_url": "https://script.google.com/macros/s/AKfycby1HmUCyL__jjUfb0bWECYtP45KinbrelA59jpkcWuN625UYYMdsM6hZxqwn2F0sSzQXA/exec"
+  "demora_estimada": "30 a 45 min",
+  "aviso_del_dia": "¡Hoy cortes frescos de pollo y cerdo! 5% OFF abonando en efectivo en el local o al recibir.",
+  "descuento_efectivo": 5,
+  "descuento_transferencia": 0,
+  "descuento_primer_pedido": 5,
+  "whatsapp": "5491165740418",
+  "apps_script_url": ""
 }

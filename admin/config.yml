@@ -1,139 +1,165 @@
 backend:
   name: github
-  repo: mondinellisg-prog/sushi-garden
+  repo: mondinellisg-prog/laestacion
   branch: main
 
 media_folder: "assets/productos"
 public_folder: "assets/productos"
 
 collections:
-  - name: menu
-    label: "Menú y Platos"
-    label_singular: "Plato"
+  - name: "menu"
+    label: "Productos y Precios"
+    label_singular: "Producto"
     file: "content/menu.json"
-    identifier_field: nombre
-    create: true
-    delete: true
+    identifier_field: "nombre"
     bulk_edit: true
     table_columns:
-      - nombre
-      - categoria
-      - piezas
-      - precio
-      - stock
+      - "nombre"
+      - "categoria"
+      - "piezas"
+      - "precio"
+      - "stock"
     sortable_fields:
-      fields:
-        - nombre
-        - precio
-        - categoria
-        - stock
+      - "nombre"
+      - "precio"
+      - "categoria"
+      - "stock"
     view_groups:
-      default: categoria
-      groups:
-        - name: categoria
-          label: Categoría
-          field: categoria
-        - name: stock
-          label: Stock
-          field: stock
+      - label: "Rubro / Categoría"
+        field: "categoria"
+      - label: "Estado de Stock"
+        field: "stock"
     view_filters:
-      - label: Disponibles
-        field: stock
-        pattern: "^disponible$"
-      - label: Agotados
-        field: stock
-        pattern: "^agotado$"
+      - label: "Solo Disponibles"
+        field: "stock"
+        pattern: "disponible"
+      - label: "Agotados"
+        field: "stock"
+        pattern: "agotado"
     fields:
-      - name: id
-        label: "ID Único"
-        widget: string
-        hint: "Sin espacios ni tildes (ej: combo-x-20). Se usa para fusionar precios masivos."
-      - name: nombre
-        label: "Nombre del Plato"
-        widget: string
-      - name: piezas
-        label: "Piezas / Medida"
-        widget: string
+      - name: "id"
+        label: "ID único (slug sin espacios ni tildes)"
+        widget: "string"
+        hint: "Ejemplo: pechuga-sin-hueso-kg (no lo cambies si ya existe para mantener la fusión CSV)"
+      - name: "nombre"
+        label: "Nombre del Producto"
+        widget: "string"
+      - name: "piezas"
+        label: "Presentación / Peso / Unidad"
+        widget: "string"
         required: false
-        hint: "Ej: x4, x8, 20 piezas, 1 porción"
-      - name: descripcion
-        label: "Descripción"
-        widget: text
-        required: false
-      - name: precio
+        hint: "Ej: x 1 kg, x 200 g, 1.5 L, x 12 u."
+      - name: "precio"
         label: "Precio (ARS entero sin puntos)"
-        widget: number
-        value_type: int
+        widget: "number"
+        value_type: "int"
         min: 0
-      - name: categoria
-        label: "Categoría"
-        widget: relation
-        collection: categorias
-        value_field: id
+      - name: "categoria"
+        label: "Categoría / Rubro"
+        widget: "relation"
+        collection: "categorias"
+        value_field: "id"
         display_fields:
-          - nombre
+          - "nombre"
         search_fields:
-          - nombre
-          - id
-      - name: etiquetas
-        label: "Etiquetas"
-        widget: select
+          - "nombre"
+          - "id"
+      - name: "stock"
+        label: "Stock"
+        widget: "select"
+        options:
+          - label: "Disponible"
+            value: "disponible"
+          - label: "Agotado"
+            value: "agotado"
+        default: "disponible"
+      - name: "etiquetas"
+        label: "Etiquetas destacadas"
+        widget: "select"
         multiple: true
         required: false
         options:
           - "Más Elegido"
           - "Favorito"
+          - "Oferta"
+          - "Fresco"
           - "Sin TACC"
+          - "Familiar"
           - "Veggie"
-          - "Hot"
-          - "Salmón"
-      - name: stock
-        label: "Stock"
-        widget: select
-        default: "disponible"
-        options:
-          - { label: "Disponible", value: "disponible" }
-          - { label: "Agotado", value: "agotado" }
-      - name: imagen
-        label: "Foto del Producto"
-        widget: image
+      - name: "descripcion"
+        label: "Descripción breve"
+        widget: "text"
+        required: false
+      - name: "imagen"
+        label: "Foto del producto (opcional)"
+        widget: "image"
         required: false
 
-  - name: categorias
-    label: "Categorías"
+  - name: "categorias"
+    label: "Categorías / Rubros"
     label_singular: "Categoría"
     file: "content/categorias.json"
-    identifier_field: nombre
-    create: true
-    delete: true
+    identifier_field: "nombre"
+    bulk_edit: true
     table_columns:
-      - nombre
-      - id
-      - emoji
+      - "emoji"
+      - "nombre"
+      - "id"
     fields:
-      - name: id
-        label: "ID (slug)"
-        widget: string
-        hint: "Sin espacios ni tildes (ej: promos, piezas)"
-      - name: nombre
-        label: "Nombre Visible"
-        widget: string
-      - name: emoji
-        label: "Emoji / Ícono"
-        widget: string
+      - name: "id"
+        label: "ID interno (sin espacios ni tildes)"
+        widget: "string"
+      - name: "nombre"
+        label: "Nombre visible del rubro"
+        widget: "string"
+      - name: "emoji"
+        label: "Emoji"
+        widget: "string"
         required: false
-        default: "🍣"
 
 singletons:
-  - name: config
+  - name: "config"
     label: "Configuración del Local"
     file: "content/config.json"
     fields:
-      - { name: local_abierto, label: "Local Abierto", widget: boolean, default: true }
-      - { name: demora_estimada, label: "Demora Estimada", widget: string, default: "40 a 60 min" }
-      - { name: aviso_del_dia, label: "Aviso del Día", widget: string, required: false }
-      - { name: descuento_efectivo, label: "% Descuento Efectivo", widget: number, value_type: int, default: 10, min: 0, max: 100 }
-      - { name: descuento_transferencia, label: "% Descuento Transferencia", widget: number, value_type: int, default: 5, min: 0, max: 100 }
-      - { name: descuento_primer_pedido, label: "% Descuento Primer Pedido", widget: number, value_type: int, default: 15, min: 0, max: 100 }
-      - { name: whatsapp, label: "Número WhatsApp (549...)", widget: string, default: "5491136293941" }
-      - { name: apps_script_url, label: "URL Web App Google Apps Script", widget: string, required: false }
+      - name: "local_abierto"
+        label: "¿El local está abierto ahora?"
+        widget: "boolean"
+        default: true
+      - name: "demora_estimada"
+        label: "Demora estimada de preparación / envío"
+        widget: "string"
+        default: "30 a 45 min"
+      - name: "aviso_del_dia"
+        label: "Aviso o promo del día (dejar vacío para ocultar)"
+        widget: "text"
+        required: false
+      - name: "descuento_efectivo"
+        label: "% Descuento en Efectivo"
+        widget: "number"
+        value_type: "int"
+        min: 0
+        max: 90
+        default: 5
+      - name: "descuento_transferencia"
+        label: "% Descuento en Transferencia"
+        widget: "number"
+        value_type: "int"
+        min: 0
+        max: 90
+        default: 0
+      - name: "descuento_primer_pedido"
+        label: "% Descuento Primer Pedido Web"
+        widget: "number"
+        value_type: "int"
+        min: 0
+        max: 90
+        default: 5
+      - name: "whatsapp"
+        label: "WhatsApp de recepción (código país sin + ni espacios)"
+        widget: "string"
+        hint: "Ejemplo Argentina: 5491122334455"
+      - name: "apps_script_url"
+        label: "URL Web App de Google Apps Script (/exec)"
+        widget: "string"
+        required: false

@@ -4,9 +4,12 @@
     "nombre": "Pollo Entero Fresco",
     "piezas": "x 1 kg",
     "descripcion": "Pollo de granja fresco entero (peso aprox. por kilo). Podés pedirlo trozado en observaciones.",
-    "precio": 4200,
+    "precio": 4242,
     "categoria": "pollo",
-    "etiquetas": ["Más Elegido", "Fresco"],
+    "etiquetas": [
+      "Más Elegido",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -15,9 +18,12 @@
     "nombre": "Pata y Muslo de Pollo",
     "piezas": "x 1 kg",
     "descripcion": "Cuarto trasero fresco, ideal para horno, guisos o parrilla.",
-    "precio": 3900,
+    "precio": 3939,
     "categoria": "pollo",
-    "etiquetas": ["Oferta", "Fresco"],
+    "etiquetas": [
+      "Oferta",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -26,9 +32,12 @@
     "nombre": "Pechuga Sin Hueso",
     "piezas": "x 1 kg",
     "descripcion": "Suprema limpia sin piel ni hueso, cortada fresca del día.",
-    "precio": 7800,
+    "precio": 7878,
     "categoria": "pollo",
-    "etiquetas": ["Sin TACC", "Fresco"],
+    "etiquetas": [
+      "Sin TACC",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -37,9 +46,11 @@
     "nombre": "Milanesas de Pollo Preparadas",
     "piezas": "x 1 kg",
     "descripcion": "Fileteadas finas y rebozadas con pan rallado casero, listas para cocinar.",
-    "precio": 8900,
+    "precio": 8989,
     "categoria": "pollo",
-    "etiquetas": ["Favorito"],
+    "etiquetas": [
+      "Favorito"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -48,9 +59,11 @@
     "nombre": "Alitas de Pollo Frescas",
     "piezas": "x 1 kg",
     "descripcion": "Alitas limpias ideales para hacer crocantes al horno o fritas.",
-    "precio": 3200,
+    "precio": 3232,
     "categoria": "pollo",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -59,9 +72,11 @@
     "nombre": "Medallones de Pollo Caseros",
     "piezas": "x 4 u.",
     "descripcion": "Hamburguesas artesanales de pechuga de pollo condimentadas suave.",
-    "precio": 4600,
+    "precio": 4646,
     "categoria": "pollo",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -72,7 +87,10 @@
     "descripcion": "Corte tierno y veteado, ideal para parrilla, disco o braseado.",
     "precio": 9800,
     "categoria": "cerdo",
-    "etiquetas": ["Más Elegido", "Fresco"],
+    "etiquetas": [
+      "Más Elegido",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -83,7 +101,9 @@
     "descripcion": "Costeletas cortadas a pedido con hueso, jugosas para plancha o sartén.",
     "precio": 7900,
     "categoria": "cerdo",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -94,7 +114,10 @@
     "descripcion": "Costillar de cerdo fresco ideal para asador, parrilla o al horno con limón.",
     "precio": 7400,
     "categoria": "cerdo",
-    "etiquetas": ["Oferta", "Fresco"],
+    "etiquetas": [
+      "Oferta",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -105,7 +128,9 @@
     "descripcion": "Corte fino y parejo, excelente para hacerlo a la pizza o arrollado.",
     "precio": 10500,
     "categoria": "cerdo",
-    "etiquetas": ["Favorito"],
+    "etiquetas": [
+      "Favorito"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -116,7 +141,10 @@
     "descripcion": "Corte magro súper tierno, sin desperdicio.",
     "precio": 9200,
     "categoria": "cerdo",
-    "etiquetas": ["Sin TACC", "Fresco"],
+    "etiquetas": [
+      "Sin TACC",
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -127,7 +155,9 @@
     "descripcion": "Elaboración propia 100% cerdo con condimento suave tradicional.",
     "precio": 8400,
     "categoria": "cerdo",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -138,7 +168,10 @@
     "descripcion": "Feteado fino en el momento, bajo en sodio y libre de gluten.",
     "precio": 3400,
     "categoria": "fiambreria",
-    "etiquetas": ["Más Elegido", "Sin TACC"],
+    "etiquetas": [
+      "Más Elegido",
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -149,7 +182,9 @@
     "descripcion": "Queso semiduro suave ideal para sándwiches, tostados y picadas.",
     "precio": 3200,
     "categoria": "fiambreria",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -160,7 +195,9 @@
     "descripcion": "Clásico salame picado fino curado, listo para picada o sándwich.",
     "precio": 3600,
     "categoria": "fiambreria",
-    "etiquetas": ["Favorito"],
+    "etiquetas": [
+      "Favorito"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -171,7 +208,10 @@
     "descripcion": "Queso cremoso que funde parejo, ideal para pizzas, tartas y empanadas.",
     "precio": 4900,
     "categoria": "fiambreria",
-    "etiquetas": ["Oferta", "Sin TACC"],
+    "etiquetas": [
+      "Oferta",
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -193,7 +233,9 @@
     "descripcion": "Fiambre estacionado de sabor intenso, feteado bien fino.",
     "precio": 4500,
     "categoria": "fiambreria",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -204,7 +246,9 @@
     "descripcion": "Botella familiar de aceite de girasol 100% refinado.",
     "precio": 3800,
     "categoria": "almacen",
-    "etiquetas": ["Más Elegido"],
+    "etiquetas": [
+      "Más Elegido"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -215,7 +259,9 @@
     "descripcion": "Estacionamiento natural, rendimiento parejo sin acidez.",
     "precio": 4900,
     "categoria": "almacen",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -226,7 +272,9 @@
     "descripcion": "Grano entero seleccionado que no se pasa ni se pega.",
     "precio": 2300,
     "categoria": "almacen",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -248,7 +296,9 @@
     "descripcion": "Tomate triturado natural para salsas, tucos y guisos.",
     "precio": 1350,
     "categoria": "almacen",
-    "etiquetas": ["Oferta"],
+    "etiquetas": [
+      "Oferta"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -270,7 +320,9 @@
     "descripcion": "Horneado fresco todos los días, corteza crocante y miga suave.",
     "precio": 2800,
     "categoria": "panificados",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -281,7 +333,9 @@
     "descripcion": "Rebanadas tiernas ideales para tostadas y sándwiches de fiambre.",
     "precio": 3100,
     "categoria": "panificados",
-    "etiquetas": ["Más Elegido"],
+    "etiquetas": [
+      "Más Elegido"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -303,7 +357,10 @@
     "descripcion": "Cremoso y tradicional para desayunos, meriendas o postres.",
     "precio": 2950,
     "categoria": "panificados",
-    "etiquetas": ["Favorito", "Sin TACC"],
+    "etiquetas": [
+      "Favorito",
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -336,7 +393,10 @@
     "descripcion": "Fortificada con vitaminas A y D en envase tetrabrik.",
     "precio": 1850,
     "categoria": "lacteos",
-    "etiquetas": ["Más Elegido", "Sin TACC"],
+    "etiquetas": [
+      "Más Elegido",
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -347,7 +407,9 @@
     "descripcion": "Sabor vainilla o frutilla bien frío de heladera.",
     "precio": 2900,
     "categoria": "lacteos",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -358,7 +420,9 @@
     "descripcion": "Pan de manteca pura de crema pasteurizada.",
     "precio": 3100,
     "categoria": "lacteos",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -369,7 +433,9 @@
     "descripcion": "Ideal para salsas de pollo, cerdo o pastas y para batir.",
     "precio": 2400,
     "categoria": "lacteos",
-    "etiquetas": ["Sin TACC"],
+    "etiquetas": [
+      "Sin TACC"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -380,7 +446,9 @@
     "descripcion": "Docena de huevos grandes frescos de granja.",
     "precio": 3200,
     "categoria": "lacteos",
-    "etiquetas": ["Fresco"],
+    "etiquetas": [
+      "Fresco"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -391,7 +459,10 @@
     "descripcion": "Bandeja por 30 unidades grandes, ideal para ahorro familiar.",
     "precio": 7200,
     "categoria": "lacteos",
-    "etiquetas": ["Oferta", "Familiar"],
+    "etiquetas": [
+      "Oferta",
+      "Familiar"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -402,7 +473,9 @@
     "descripcion": "Botella familiar bien fría lista para servir.",
     "precio": 4100,
     "categoria": "bebidas-sa",
-    "etiquetas": ["Más Elegido"],
+    "etiquetas": [
+      "Más Elegido"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -457,7 +530,9 @@
     "descripcion": "Bebida sin gas liviana sabor fruta.",
     "precio": 2100,
     "categoria": "bebidas-sa",
-    "etiquetas": ["Oferta"],
+    "etiquetas": [
+      "Oferta"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -468,7 +543,9 @@
     "descripcion": "Lata helada lista para disfrutar.",
     "precio": 2300,
     "categoria": "bebidas-ca",
-    "etiquetas": ["Más Elegido"],
+    "etiquetas": [
+      "Más Elegido"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -479,7 +556,9 @@
     "descripcion": "Botella de litro bien fría (precio sin envase o trayendo envase).",
     "precio": 3900,
     "categoria": "bebidas-ca",
-    "etiquetas": ["Oferta"],
+    "etiquetas": [
+      "Oferta"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -490,7 +569,9 @@
     "descripcion": "Tinto mendocino equilibrado, ideal para carnes de cerdo y picadas.",
     "precio": 5400,
     "categoria": "bebidas-ca",
-    "etiquetas": ["Favorito"],
+    "etiquetas": [
+      "Favorito"
+    ],
     "stock": "disponible",
     "imagen": ""
   },
@@ -512,7 +593,9 @@
     "descripcion": "Botella tradicional de 750 ml.",
     "precio": 13500,
     "categoria": "bebidas-ca",
-    "etiquetas": ["Más Elegido"],
+    "etiquetas": [
+      "Más Elegido"
+    ],
     "stock": "disponible",
     "imagen": ""
   },

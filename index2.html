@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de Precios y Reposición - Minisuper La Esquina</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bosque: {
+              50: '#f2f7f4',
+              100: '#dfece4',
+              600: '#1b5e3a',
+              700: '#154b2e',
+              900: '#0d2e1c'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen pb-10">
+
+  <!-- BARRA SUPERIOR COMPACTA CON CAMBIO DE PESTAÑAS -->
+  <header class="sticky top-0 z-40 bg-stone-900 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button id="openSidebarBtn" type="button" aria-label="Abrir rubros y accesos"
+                class="shrink-0 p-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h1 class="font-extrabold text-sm sm:text-base truncate">La Esquina · Precios</h1>
+      </div>
+
+      <!-- Pestañas principales -->
+      <nav class="flex items-center gap-1.5 bg-stone-800 p-1 rounded-xl shrink-0">
+        <button id="tabCatalogoBtn" type="button"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-bosque-600 text-white shadow-sm transition-colors">
+          Lista de Precios
+        </button>
+        <button id="tabProveedoresBtn" type="button"
+                class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-300 hover:text-white transition-colors flex items-center gap-1.5">
+          <span>Proveedores</span>
+          <span id="supplierCountBadge" class="px-1.5 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-400 text-stone-950">0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- VISTA 1: LISTA DE PRECIOS (BUSCADOR + CATEGORÍAS + PRODUCTOS) -->
+  <main id="viewCatalogo" class="max-w-6xl mx-auto px-3 sm:px-4 pt-3">
+
+    <!-- Aviso del día opcional desde config.json -->
+    <div id="avisoDelDiaBox" class="hidden mb-3 rounded-xl bg-amber-50 border border-amber-300 px-3.5 py-2.5 text-amber-950 flex items-center gap-2.5">
+      <span class="text-base" aria-hidden="true">📢</span>
+      <p id="avisoDelDiaText" class="text-xs sm:text-sm font-semibold"></p>
+    </div>
+
+    <!-- Buscador y Pestañas de Rubros pegados arriba -->
+    <div class="sticky top-[54px] z-30 bg-stone-100/95 backdrop-blur pt-1 pb-2.5 border-b border-stone-200 -mx-3 sm:-mx-4 px-3 sm:px-4">
+      <div class="relative mb-2.5">
+        <input id="searchInput" type="search" autocomplete="off"
+               placeholder="Buscar producto o precio rápido (ej: bondiola, pollo, yerba)..."
+               class="w-full pl-10 pr-9 py-2.5 rounded-xl bg-white border border-stone-300 focus:border-bosque-600 focus:ring-2 focus:ring-bosque-600/20 outline-none text-sm shadow-sm" />
+        <svg class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <button id="clearSearchBtn" type="button" class="hidden absolute right-2.5 top-2 text-stone-400 hover:text-stone-700 px-1.5 py-1 text-xs font-bold">✕</button>
+      </div>
+
+      <div id="categoryTabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5"></div>
+    </div>
+
+    <!-- Grilla de Productos -->
+    <div id="menuContainer" class="mt-4 space-y-8">
+      <div class="text-center py-12 text-stone-500 text-sm">Cargando lista de precios...</div>
+    </div>
+  </main>
+
+  <!-- VISTA 2: PEDIDO A PROVEEDORES (LISTA DE REPOSICIÓN) -->
+  <section id="viewProveedores" class="hidden max-w-4xl mx-auto px-3 sm:px-4 pt-4 space-y-4">
+    <div class="bg-white rounded-2xl border border-stone-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg sm:text-xl font-extrabold text-stone-900">Lista para Comprar a Proveedores</h2>
+        <p id="supplierSummaryCount" class="text-xs text-stone-500 mt-0.5">0 productos en lista</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="copySupplierListBtn" type="button"
+                class="px-3.5 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-white text-xs font-bold transition-colors">
+          Copiar Lista
+        </button>
+        <button id="waSupplierListBtn" type="button"
+                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors">
+          Enviar por WhatsApp
+        </button>
+        <button id="clearSupplierListBtn" type="button"
+                class="px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold transition-colors">
+          Limpiar Lista
+        </button>
+      </div>
+    </div>
+
+    <p id="supplierFeedbackMsg" class="text-xs font-semibold text-emerald-700 min-h-[16px] px-1"></p>
+
+    <!-- Agregar ítem libre rápido (por si falta algo fuera del catálogo) -->
+    <div class="bg-white rounded-2xl border border-stone-200 p-3.5 shadow-sm flex gap-2">
+      <input id="manualSupplierInput" type="text" placeholder="Agregar algo manual (ej: Bolsas camiseta, rollo papel, hielo...)"
+             class="flex-1 rounded-xl border border-stone-300 px-3 py-2 text-sm outline-none focus:border-bosque-600" />
+      <button id="addManualSupplierBtn" type="button"
+              class="shrink-0 px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs sm:text-sm font-bold">
+        + Agregar
+      </button>
+    </div>
+
+    <!-- Lista de ítems seleccionados -->
+    <div id="supplierListContainer" class="space-y-3"></div>
+  </section>
+
+  <!-- SIDEBAR DESLIZABLE DE RUBROS Y ACCESOS ADMIN -->
+  <div id="categorySidebarOverlay" class="fixed inset-0 z-50 bg-black/50 hidden opacity-0 transition-opacity"></div>
+  <aside id="categorySidebar" class="fixed top-0 left-0 bottom-0 z-50 w-72 bg-white shadow-2xl transform -translate-x-full transition-transform duration-200 flex flex-col">
+    <div class="p-4 border-b border-stone-200 flex items-center justify-between bg-stone-900 text-white">
+      <span class="font-bold text-base">Rubros y Gestión</span>
+      <button id="closeSidebarBtn" type="button" aria-label="Cerrar menú" class="p-1.5 rounded-lg hover:bg-white/10 text-lg leading-none">✕</button>
+    </div>
+    <nav id="sidebarCategoryList" class="flex-1 overflow-y-auto p-3 space-y-1"></nav>
+    <div class="p-3 border-t border-stone-200 bg-stone-50 space-y-2">
+      <div class="text-[11px] font-bold uppercase tracking-wider text-stone-500">Administración</div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <a href="./admin/index.html" class="px-3 py-2 rounded-lg bg-stone-900 text-white font-bold text-center hover:bg-stone-800">Editar Precios</a>
+        <a href="./admin/masivo.html" class="px-3 py-2 rounded-lg bg-amber-400 text-stone-950 font-bold text-center hover:bg-amber-300">Aumento %</a>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'minisuper_proveedores_v1';
+      const VARIANT_GROUP_CATEGORIES = new Set(['piezas', 'combos', 'promos']);
+
+      let menuItems = [];
+      let categories = [];
+      let appConfig = { aviso_del_dia: '' };
+
+      // Estado de la lista de reposición a proveedores
+      // { catalog: [{ id, qty, note }], manual: [{ uid, nombre, qty }] }
+      let supplierData = { catalog: [], manual: [] };
+
+      let activeTab = 'catalogo'; // 'catalogo' | 'proveedores'
+      let activeCategoryId = 'all';
+      let searchQuery = '';
+
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function safeImageUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        const trimmed = url.trim();
+        if (
+          trimmed.startsWith('assets/') ||
+          trimmed.startsWith('./assets/') ||
+          trimmed.startsWith('https://')
+        ) {
+          return trimmed;
+        }
+        return '';
+      }
+
+      function formatARS(num) {
+        const val = Math.round(Number(num) || 0);
+        return '$' + val.toLocaleString('es-AR');
+      }
+
+      async function initApp() {
+        try {
+          const [menuRes, catRes, cfgRes] = await Promise.all([
+            fetch('./content/menu.json', { cache: 'no-cache' }),
+            fetch('./content/categorias.json', { cache: 'no-cache' }),
+            fetch('./content/config.json', { cache: 'no-cache' })
+          ]);
+
+          if (!menuRes.ok || !catRes.ok) {
+            throw new Error('Error al leer catálogo');
+          }
+
+          menuItems = await menuRes.json();
+          categories = await catRes.json();
+          if (cfgRes.ok) {
+            appConfig = Object.assign(appConfig, await cfgRes.json());
+          }
+
+          applyAviso();
+          loadSupplierData();
+          renderNavigation();
+          renderMenu();
+          renderSupplierList();
+        } catch (err) {
+          document.getElementById('menuContainer').innerHTML =
+            '<div class="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-center text-sm">No pudimos cargar la lista de precios. Recargá la página.</div>';
+        }
+      }
+
+      function applyAviso() {
+        const box = document.getElementById('avisoDelDiaBox');
+        const txt = document.getElementById('avisoDelDiaText');
+        if (appConfig.aviso_del_dia && String(appConfig.aviso_del_dia).trim() !== '') {
+          txt.textContent = appConfig.aviso_del_dia;
+          box.classList.remove('hidden');
+        } else {
+          box.classList.add('hidden');
+        }
+      }
+
+      function loadSupplierData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const validIds = new Set(menuItems.map(i => i.id));
+            supplierData.catalog = Array.isArray(parsed.catalog)
+              ? parsed.catalog.filter(x => x && validIds.has(x.id) && Number(x.qty) > 0)
+              : [];
+            supplierData.manual = Array.isArray(parsed.manual)
+              ? parsed.manual.filter(x => x && x.nombre && Number(x.qty) > 0)
+              : [];
+          }
+        } catch (e) {
+          supplierData = { catalog: [], manual: [] };
+        }
+      }
+
+      function saveSupplierData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(supplierData));
+        } catch (e) {}
+      }
+
+      function getSupplierQty(id) {
+        const found = supplierData.catalog.find(x => x.id === id);
+        return found ? found.qty : 0;
+      }
+
+      function getTotalSupplierItemsCount() {
+        return supplierData.catalog.length + supplierData.manual.length;
+      }
+
+      function addCatalogToSupplier(id) {
+        const prod = menuItems.find(m => m.id === id);
+        if (!prod) return;
+        const found = supplierData.catalog.find(x => x.id === id);
+        if (found) {
+          found.qty += 1;
+        } else {
+          supplierData.catalog.push({ id: id, qty: 1, note: '' });
+        }
+        saveSupplierData();
+        renderMenu();
+        renderSupplierList();
+      }
+
+      function decCatalogFromSupplier(id) {
+        const idx = supplierData.catalog.findIndex(x => x.id === id);
+        if (idx === -1) return;
+        if (supplierData.catalog[idx].qty > 1) {
+          supplierData.catalog[idx].qty -= 1;
+        } else {
+          supplierData.catalog.splice(idx, 1);
+        }
+        saveSupplierData();
+        renderMenu();
+        renderSupplierList();
+      }
+
+      function removeCatalogFromSupplier(id) {
+        supplierData.catalog = supplierData.catalog.filter(x => x.id !== id);
+        saveSupplierData();
+        renderMenu();
+        renderSupplierList();
+      }
+
+      function addManualToSupplier(nombre) {
+        const clean = String(nombre || '').trim();
+        if (!clean) return;
+        supplierData.manual.push({
+          uid: 'man-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+          nombre: clean,
+          qty: 1
+        });
+        saveSupplierData();
+        renderSupplierList();
+      }
+
+      function updateManualQty(uid, delta) {
+        const idx = supplierData.manual.findIndex(x => x.uid === uid);
+        if (idx === -1) return;
+        const nextQty = supplierData.manual[idx].qty + delta;
+        if (nextQty <= 0) {
+          supplierData.manual.splice(idx, 1);
+        } else {
+          supplierData.manual[idx].qty = nextQty;
+        }
+        saveSupplierData();
+        renderSupplierList();
+      }
+
+      function removeManualFromSupplier(uid) {
+        supplierData.manual = supplierData.manual.filter(x => x.uid !== uid);
+        saveSupplierData();
+        renderSupplierList();
+      }
+
+      function clearAllSupplier() {
+        if (getTotalSupplierItemsCount() === 0) return;
+        if (!confirm('¿Vaciar toda la lista de pedido a proveedores?')) return;
+        supplierData = { catalog: [], manual: [] };
+        saveSupplierData();
+        renderMenu();
+        renderSupplierList();
+        showFeedback('Lista de proveedores limpiada.');
+      }
+
+      function showFeedback(msg) {
+        const el = document.getElementById('supplierFeedbackMsg');
+        el.textContent = msg;
+        setTimeout(() => {
+          if (el.textContent === msg) el.textContent = '';
+        }, 3000);
+      }
+
+      function switchTab(tab) {
+        activeTab = tab;
+        const btnCat = document.getElementById('tabCatalogoBtn');
+        const btnSup = document.getElementById('tabProveedoresBtn');
+        const viewCat = document.getElementById('viewCatalogo');
+        const viewSup = document.getElementById('viewProveedores');
+
+        if (tab === 'catalogo') {
+          btnCat.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-bosque-600 text-white shadow-sm transition-colors';
+          btnSup.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-300 hover:text-white transition-colors flex items-center gap-1.5';
+          viewCat.classList.remove('hidden');
+          viewSup.classList.add('hidden');
+        } else {
+          btnSup.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-bosque-600 text-white shadow-sm transition-colors flex items-center gap-1.5';
+          btnCat.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-bold text-stone-300 hover:text-white transition-colors';
+          viewSup.classList.remove('hidden');
+          viewCat.classList.add('hidden');
+          renderSupplierList();
+        }
+      }
+
+      function renderNavigation() {
+        const tabsEl = document.getElementById('categoryTabs');
+        const sideEl = document.getElementById('sidebarCategoryList');
+
+        let tabsHtml = '<button type="button" data-cat="all" class="cat-tab shrink-0 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-colors ' +
+          (activeCategoryId === 'all' ? 'bg-bosque-700 text-white shadow-sm' : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-50') +
+          '">Todos</button>';
+
+        let sideHtml = '<button type="button" data-cat="all" class="sidebar-cat-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2.5 ' +
+          (activeCategoryId === 'all' ? 'bg-bosque-50 text-bosque-700' : 'text-stone-700 hover:bg-stone-100') +
+          '"><span>📋</span><span>Todos los rubros</span></button>';
+
+        categories.forEach(cat => {
+          const isActive = activeCategoryId === cat.id;
+          const safeId = escapeHTML(cat.id);
+          const safeEmoji = escapeHTML(cat.emoji || '•');
+          const safeNombre = escapeHTML(cat.nombre);
+
+          tabsHtml += '<button type="button" data-cat="' + safeId + '" class="cat-tab shrink-0 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 ' +
+            (isActive ? 'bg-bosque-700 text-white shadow-sm' : 'bg-white border border-stone-300 text-stone-700 hover:bg-stone-50') +
+            '"><span>' + safeEmoji + '</span><span>' + safeNombre + '</span></button>';
+
+          sideHtml += '<button type="button" data-cat="' + safeId + '" class="sidebar-cat-btn w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2.5 ' +
+            (isActive ? 'bg-bosque-50 text-bosque-700' : 'text-stone-700 hover:bg-stone-100') +
+            '"><span>' + safeEmoji + '</span><span>' + safeNombre + '</span></button>';
+        });
+
+        tabsEl.innerHTML = tabsHtml;
+        sideEl.innerHTML = sideHtml;
+      }
+
+      function extractBaseName(nombre) {
+        return String(nombre || '').replace(/\s+x\d+$/i, '').trim();
+      }
+
+      function buildProductGroups(cat, items) {
+        const allowGrouping = VARIANT_GROUP_CATEGORIES.has(cat.id);
+        const groups = [];
+        for (let i = 0; i < items.length; i++) {
+          const current = items[i];
+          const next = items[i + 1];
+          if (
+            allowGrouping &&
+            next &&
+            extractBaseName(current.nombre) !== '' &&
+            extractBaseName(current.nombre) === extractBaseName(next.nombre) &&
+            (current.piezas || /\s+x\d+$/i.test(current.nombre)) &&
+            (next.piezas || /\s+x\d+$/i.test(next.nombre))
+          ) {
+            groups.push([current, next]);
+            i++;
+          } else {
+            groups.push([current]);
+          }
+        }
+        return groups;
+      }
+
+      function renderChip(tag) {
+        const lower = String(tag).toLowerCase();
+        let cls = 'bg-stone-100 text-stone-700 border-stone-200';
+        if (lower.includes('más elegido') || lower.includes('favorito')) cls = 'bg-amber-100 text-amber-900 border-amber-300';
+        else if (lower.includes('oferta')) cls = 'bg-red-100 text-red-800 border-red-200';
+        else if (lower.includes('sin tacc')) cls = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        else if (lower.includes('fresco')) cls = 'bg-sky-100 text-sky-800 border-sky-200';
+        return '<span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded-full border ' + cls + '">' + escapeHTML(tag) + '</span>';
+      }
+
+      function renderMenu() {
+        const container = document.getElementById('menuContainer');
+        const q = searchQuery.trim().toLowerCase();
+
+        const visibleCats = (activeCategoryId === 'all' || q !== '')
+          ? categories
+          : categories.filter(c => c.id === activeCategoryId);
+
+        let html = '';
+        let totalRendered = 0;
+
+        visibleCats.forEach(cat => {
+          const catItems = menuItems.filter(item => {
+            if (item.categoria !== cat.id) return false;
+            if (!q) return true;
+            const hay = (item.nombre + ' ' + (item.descripcion || '') + ' ' + (item.piezas || '') + ' ' + cat.nombre).toLowerCase();
+            return hay.includes(q);
+          });
+
+          if (catItems.length === 0) return;
+          totalRendered += catItems.length;
+
+          const groups = buildProductGroups(cat, catItems);
+
+          html += '<section id="cat-' + escapeHTML(cat.id) + '" class="scroll-mt-32">';
+          html += '<div class="flex items-center justify-between mb-3 border-b border-stone-200 pb-1.5">';
+          html += '<h2 class="text-lg sm:text-xl font-extrabold text-stone-900 flex items-center gap-2"><span>' + escapeHTML(cat.emoji || '•') + '</span><span>' + escapeHTML(cat.nombre) + '</span></h2>';
+          html += '<span class="text-xs font-semibold text-stone-500">' + catItems.length + ' items</span>';
+          html += '</div>';
+
+          html += '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">';
+
+          groups.forEach(group => {
+            if (group.length === 2) {
+              const first = group[0];
+              const baseTitle = extractBaseName(first.nombre);
+              const imgUrl = safeImageUrl(first.imagen) || safeImageUrl(group[1].imagen);
+
+              html += '<article class="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 flex flex-col justify-between">';
+              if (imgUrl) {
+                html += '<img src="' + escapeHTML(imgUrl) + '" alt="' + escapeHTML(baseTitle) + '" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3 bg-stone-100" />';
+              }
+              html += '<div><h3 class="font-bold text-stone-900 text-base">' + escapeHTML(baseTitle) + '</h3>';
+              if (first.descripcion) html += '<p class="text-xs text-stone-600 mt-1">' + escapeHTML(first.descripcion) + '</p>';
+              html += '</div>';
+              html += '<div class="mt-3 space-y-2">';
+              group.forEach(v => {
+                const isAgotado = v.stock === 'agotado';
+                const labelVar = v.piezas || v.nombre;
+                const supQty = getSupplierQty(v.id);
+                html += '<div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-stone-50 border border-stone-200">';
+                html += '<div><div class="text-xs font-bold text-stone-700">' + escapeHTML(labelVar) + (isAgotado ? ' <span class="text-red-600">(Agotado)</span>' : '') + '</div>';
+                html += '<div class="font-extrabold text-stone-900 text-base">' + formatARS(v.precio) + '</div></div>';
+                html += '<button type="button" data-action="add-sup" data-id="' + escapeHTML(v.id) + '" class="px-3 py-1.5 rounded-lg ' +
+                  (supQty > 0 ? 'bg-amber-400 text-stone-950' : 'bg-bosque-700 hover:bg-bosque-600 text-white') +
+                  ' text-xs font-bold">' + (supQty > 0 ? '✓ Pedir (' + supQty + ')' : '+ A comprar') + '</button>';
+                html += '</div>';
+              });
+              html += '</div></article>';
+              return;
+            }
+
+            const item = group[0];
+            const isAgotado = item.stock === 'agotado';
+            const imgUrl = safeImageUrl(item.imagen);
+            const supQty = getSupplierQty(item.id);
+            const tags = Array.isArray(item.etiquetas) ? item.etiquetas : [];
+
+            html += '<article class="bg-white rounded-2xl border ' + (supQty > 0 ? 'border-amber-400 ring-1 ring-amber-300' : 'border-stone-200') + ' shadow-sm p-4 flex flex-col justify-between">';
+            html += '<div>';
+            if (imgUrl) {
+              html += '<img src="' + escapeHTML(imgUrl) + '" alt="' + escapeHTML(item.nombre) + '" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3 bg-stone-100" />';
+            }
+
+            if (tags.length > 0 || isAgotado) {
+              html += '<div class="flex flex-wrap gap-1.5 mb-2">';
+              if (isAgotado) html += '<span class="inline-block text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-red-600 text-white">AGOTADO</span>';
+              tags.forEach(t => { html += renderChip(t); });
+              html += '</div>';
+            }
+
+            html += '<div class="flex items-start justify-between gap-2">';
+            html += '<h3 class="font-bold text-stone-900 text-base leading-snug">' + escapeHTML(item.nombre) + '</h3>';
+            if (item.piezas) {
+              html += '<span class="shrink-0 text-xs font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 border border-stone-200">' + escapeHTML(item.piezas) + '</span>';
+            }
+            html += '</div>';
+
+            if (item.descripcion) {
+              html += '<p class="text-xs text-stone-500 mt-1 leading-relaxed">' + escapeHTML(item.descripcion) + '</p>';
+            }
+            html += '</div>';
+
+            html += '<div class="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-3">';
+            html += '<div class="text-xl font-extrabold text-bosque-700">' + formatARS(item.precio) + '</div>';
+
+            if (supQty > 0) {
+              html += '<div class="inline-flex items-center gap-1 bg-amber-50 border border-amber-300 rounded-xl p-1">';
+              html += '<button type="button" data-action="dec-sup" data-id="' + escapeHTML(item.id) + '" class="w-7 h-7 rounded-lg bg-white hover:bg-stone-100 text-stone-800 font-bold text-sm shadow-sm">−</button>';
+              html += '<span class="px-2 text-xs font-extrabold text-stone-900">' + supQty + '</span>';
+              html += '<button type="button" data-action="add-sup" data-id="' + escapeHTML(item.id) + '" class="w-7 h-7 rounded-lg bg-amber-400 hover:bg-amber-300 text-stone-950 font-bold text-sm">+</button>';
+              html += '</div>';
+            } else {
+              html += '<button type="button" data-action="add-sup" data-id="' + escapeHTML(item.id) + '" class="px-3.5 py-2 rounded-xl bg-bosque-700 hover:bg-bosque-600 text-white text-xs font-bold shadow-sm transition-colors">+ A comprar</button>';
+            }
+
+            html += '</div>';
+            html += '</article>';
+          });
+
+          html += '</div></section>';
+        });
+
+        if (totalRendered === 0) {
+          html = '<div class="bg-white rounded-2xl border border-stone-200 p-10 text-center text-stone-500">' +
+            '<p class="font-bold text-stone-700">No encontramos "' + escapeHTML(searchQuery) + '"</p>' +
+            '<button type="button" id="resetFiltersBtn" class="mt-3 px-4 py-2 rounded-xl bg-stone-900 text-white text-xs font-bold">Ver todo</button>' +
+            '</div>';
+        }
+
+        container.innerHTML = html;
+      }
+
+      function renderSupplierList() {
+        const count = getTotalSupplierItemsCount();
+        document.getElementById('supplierCountBadge').textContent = String(count);
+        document.getElementById('supplierSummaryCount').textContent =
+          count === 1 ? '1 producto en lista para pedir' : count + ' productos en lista para pedir';
+
+        const container = document.getElementById('supplierListContainer');
+        if (count === 0) {
+          container.innerHTML =
+            '<div class="bg-white rounded-2xl border border-stone-200 p-10 text-center text-stone-500 space-y-2">' +
+            '<p class="font-bold text-stone-700 text-base">No hay productos marcados para pedir</p>' +
+            '<p class="text-xs">Andá a <strong>Lista de Precios</strong> y tocá <strong>+ A comprar</strong> en los productos que necesites reponer.</p>' +
+            '</div>';
+          return;
+        }
+
+        const catById = new Map(categories.map(c => [c.id, c]));
+        let html = '';
+
+        supplierData.catalog.forEach(entry => {
+          const item = menuItems.find(m => m.id === entry.id);
+          if (!item) return;
+          const cat = catById.get(item.categoria);
+          const catLabel = cat ? ((cat.emoji || '') + ' ' + cat.nombre) : item.categoria;
+
+          html += '<div class="bg-white rounded-2xl border border-stone-200 p-3.5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">';
+          html += '<div class="min-w-0 flex-1 space-y-1.5">';
+          html += '<div class="flex flex-wrap items-center gap-2">';
+          html += '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">' + escapeHTML(catLabel) + '</span>';
+          if (item.stock === 'agotado') {
+            html += '<span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-red-100 text-red-700">SIN STOCK</span>';
+          }
+          html += '<span class="text-xs text-stone-500">Venta: ' + formatARS(item.precio) + '</span>';
+          html += '</div>';
+
+          html += '<div class="font-bold text-stone-900 text-sm sm:text-base">' + escapeHTML(item.nombre) +
+            (item.piezas ? ' <span class="text-xs font-semibold text-stone-500">(' + escapeHTML(item.piezas) + ')</span>' : '') + '</div>';
+
+          html += '<input type="text" data-action="note-sup" data-id="' + escapeHTML(item.id) + '" value="' + escapeHTML(entry.note || '') + '" placeholder="Nota p/ proveedor (ej: 2 cajones, trozado...)" class="w-full sm:max-w-sm rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs outline-none focus:border-bosque-600" />';
+          html += '</div>';
+
+          html += '<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">';
+          html += '<div class="inline-flex items-center gap-1 bg-stone-100 rounded-xl p-1">';
+          html += '<button type="button" data-action="dec-sup" data-id="' + escapeHTML(item.id) + '" class="w-8 h-8 rounded-lg bg-white hover:bg-stone-200 font-bold text-sm shadow-sm">−</button>';
+          html += '<span class="w-8 text-center text-sm font-extrabold">' + entry.qty + '</span>';
+          html += '<button type="button" data-action="add-sup" data-id="' + escapeHTML(item.id) + '" class="w-8 h-8 rounded-lg bg-white hover:bg-stone-200 font-bold text-sm shadow-sm">+</button>';
+          html += '</div>';
+
+          html += '<button type="button" data-action="remove-sup" data-id="' + escapeHTML(item.id) + '" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold">Quitar</button>';
+          html += '</div>';
+          html += '</div>';
+        });
+
+        supplierData.manual.forEach(entry => {
+          html += '<div class="bg-white rounded-2xl border border-stone-200 p-3.5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">';
+          html += '<div class="min-w-0 flex-1">';
+          html += '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">Ítem manual</span>';
+          html += '<div class="font-bold text-stone-900 text-sm sm:text-base mt-1">' + escapeHTML(entry.nombre) + '</div>';
+          html += '</div>';
+
+          html += '<div class="flex items-center justify-between sm:justify-end gap-2 shrink-0">';
+          html += '<div class="inline-flex items-center gap-1 bg-stone-100 rounded-xl p-1">';
+          html += '<button type="button" data-action="dec-manual" data-id="' + escapeHTML(entry.uid) + '" class="w-8 h-8 rounded-lg bg-white hover:bg-stone-200 font-bold text-sm shadow-sm">−</button>';
+          html += '<span class="w-8 text-center text-sm font-extrabold">' + entry.qty + '</span>';
+          html += '<button type="button" data-action="inc-manual" data-id="' + escapeHTML(entry.uid) + '" class="w-8 h-8 rounded-lg bg-white hover:bg-stone-200 font-bold text-sm shadow-sm">+</button>';
+          html += '</div>';
+          html += '<button type="button" data-action="remove-manual" data-id="' + escapeHTML(entry.uid) + '" class="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold">Quitar</button>';
+          html += '</div>';
+          html += '</div>';
+        });
+
+        container.innerHTML = html;
+      }
+
+      function buildSupplierPlainText() {
+        const catById = new Map(categories.map(c => [c.id, c]));
+        const lines = [
+          '✦ PEDIDO A PROVEEDORES - LA ESQUINA ✦',
+          '────────────────────────'
+        ];
+
+        supplierData.catalog.forEach(entry => {
+          const item = menuItems.find(m => m.id === entry.id);
+          if (!item) return;
+          const cat = catById.get(item.categoria);
+          const unit = item.piezas ? ' (' + item.piezas + ')' : '';
+          const note = entry.note && entry.note.trim() ? ' — Nota: ' + entry.note.trim() : '';
+          const rubro = cat ? ' [' + cat.nombre + ']' : '';
+          lines.push('▪ ' + entry.qty + 'x ' + item.nombre + unit + rubro + note);
+        });
+
+        supplierData.manual.forEach(entry => {
+          lines.push('▪ ' + entry.qty + 'x ' + entry.nombre);
+        });
+
+        lines.push('────────────────────────');
+        return lines.join('\n');
+      }
+
+      function openSidebar() {
+        const sb = document.getElementById('categorySidebar');
+        const ov = document.getElementById('categorySidebarOverlay');
+        ov.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          ov.classList.remove('opacity-0');
+          sb.classList.remove('-translate-x-full');
+        });
+      }
+
+      function closeSidebar() {
+        const sb = document.getElementById('categorySidebar');
+        const ov = document.getElementById('categorySidebarOverlay');
+        ov.classList.add('opacity-0');
+        sb.classList.add('-translate-x-full');
+        setTimeout(() => ov.classList.add('hidden'), 200);
+      }
+
+      // Delegación de eventos
+      document.addEventListener('click', function (e) {
+        const actionBtn = e.target.closest('[data-action]');
+        if (actionBtn) {
+          const act = actionBtn.getAttribute('data-action');
+          const id = actionBtn.getAttribute('data-id');
+          if (act === 'add-sup') addCatalogToSupplier(id);
+          else if (act === 'dec-sup') decCatalogFromSupplier(id);
+          else if (act === 'remove-sup') removeCatalogFromSupplier(id);
+          else if (act === 'inc-manual') updateManualQty(id, 1);
+          else if (act === 'dec-manual') updateManualQty(id, -1);
+          else if (act === 'remove-manual') removeManualFromSupplier(id);
+          return;
+        }
+
+        const tabBtn = e.target.closest('[data-cat]');
+        if (tabBtn) {
+          activeCategoryId = tabBtn.getAttribute('data-cat');
+          switchTab('catalogo');
+          renderNavigation();
+          renderMenu();
+          if (tabBtn.classList.contains('sidebar-cat-btn')) closeSidebar();
+          return;
+        }
+
+        if (e.target && e.target.id === 'resetFiltersBtn') {
+          searchQuery = '';
+          activeCategoryId = 'all';
+          document.getElementById('searchInput').value = '';
+          document.getElementById('clearSearchBtn').classList.add('hidden');
+          renderNavigation();
+          renderMenu();
+        }
+      });
+
+      document.addEventListener('input', function (e) {
+        if (e.target && e.target.getAttribute('data-action') === 'note-sup') {
+          const id = e.target.getAttribute('data-id');
+          const found = supplierData.catalog.find(x => x.id === id);
+          if (found) {
+            found.note = e.target.value;
+            saveSupplierData();
+          }
+        }
+      });
+
+      document.getElementById('tabCatalogoBtn').addEventListener('click', () => switchTab('catalogo'));
+      document.getElementById('tabProveedoresBtn').addEventListener('click', () => switchTab('proveedores'));
+
+      document.getElementById('searchInput').addEventListener('input', function (e) {
+        searchQuery = e.target.value;
+        const clearBtn = document.getElementById('clearSearchBtn');
+        if (searchQuery.trim()) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+        renderMenu();
+      });
+
+      document.getElementById('clearSearchBtn').addEventListener('click', function () {
+        searchQuery = '';
+        document.getElementById('searchInput').value = '';
+        this.classList.add('hidden');
+        renderMenu();
+      });
+
+      document.getElementById('openSidebarBtn').addEventListener('click', openSidebar);
+      document.getElementById('closeSidebarBtn').addEventListener('click', closeSidebar);
+      document.getElementById('categorySidebarOverlay').addEventListener('click', closeSidebar);
+
+      document.getElementById('clearSupplierListBtn').addEventListener('click', clearAllSupplier);
+
+      document.getElementById('addManualSupplierBtn').addEventListener('click', function () {
+        const inp = document.getElementById('manualSupplierInput');
+        if (!inp.value.trim()) return;
+        addManualToSupplier(inp.value);
+        inp.value = '';
+      });
+
+      document.getElementById('manualSupplierInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (!this.value.trim()) return;
+          addManualToSupplier(this.value);
+          this.value = '';
+        }
+      });
+
+      document.getElementById('copySupplierListBtn').addEventListener('click', async function () {
+        if (getTotalSupplierItemsCount() === 0) {
+          showFeedback('La lista está vacía.');
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(buildSupplierPlainText());
+          showFeedback('Lista copiada al portapapeles.');
+        } catch (err) {
+          showFeedback('No se pudo copiar automáticamente.');
+        }
+      });
+
+      document.getElementById('waSupplierListBtn').addEventListener('click', function () {
+        if (getTotalSupplierItemsCount() === 0) {
+          showFeedback('Agregá productos antes de enviar.');
+          return;
+        }
+        const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(buildSupplierPlainText());
+        window.open(url, '_blank', 'noopener,noreferrer');
+      });
+
+      initApp();
+    })();
+  </script>
+</body>
+</html>

@@ -541,7 +541,7 @@
     "nombre": "Cerveza Rubia Lata",
     "piezas": "473 ml",
     "descripcion": "Lata helada lista para disfrutar.",
-    "precio": 2300,
+    "precio": 2415,
     "categoria": "bebidas-ca",
     "etiquetas": [
       "Más Elegido"
@@ -554,7 +554,7 @@
     "nombre": "Cerveza Rubia Botella",
     "piezas": "1 L",
     "descripcion": "Botella de litro bien fría (precio sin envase o trayendo envase).",
-    "precio": 3900,
+    "precio": 4095,
     "categoria": "bebidas-ca",
     "etiquetas": [
       "Oferta"
@@ -567,7 +567,7 @@
     "nombre": "Vino Tinto Malbec Clásico",
     "piezas": "750 ml",
     "descripcion": "Tinto mendocino equilibrado, ideal para carnes de cerdo y picadas.",
-    "precio": 5400,
+    "precio": 5670,
     "categoria": "bebidas-ca",
     "etiquetas": [
       "Favorito"
@@ -580,7 +580,7 @@
     "nombre": "Vino Blanco Dulce Natural",
     "piezas": "750 ml",
     "descripcion": "Fresco y frutado, se entrega frío de heladera.",
-    "precio": 4800,
+    "precio": 5040,
     "categoria": "bebidas-ca",
     "etiquetas": [],
     "stock": "disponible",
@@ -591,7 +591,7 @@
     "nombre": "Fernet Clásico",
     "piezas": "750 ml",
     "descripcion": "Botella tradicional de 750 ml.",
-    "precio": 13500,
+    "precio": 14175,
     "categoria": "bebidas-ca",
     "etiquetas": [
       "Más Elegido"
@@ -604,7 +604,7 @@
     "nombre": "Aperitivo Bitter Herbal",
     "piezas": "950 ml",
     "descripcion": "Aperitivo clásico ideal para acompañar con gaseosa o soda.",
-    "precio": 6900,
+    "precio": 7245,
     "categoria": "bebidas-ca",
     "etiquetas": [],
     "stock": "disponible",

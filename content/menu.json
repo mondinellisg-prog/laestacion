@@ -4,7 +4,7 @@
     "nombre": "Pollo Entero Fresco",
     "piezas": "x 1 kg",
     "descripcion": "Pollo de granja fresco entero (peso aprox. por kilo). Podés pedirlo trozado en observaciones.",
-    "precio": 4284,
+    "precio": 4200,
     "categoria": "pollo",
     "etiquetas": [
       "Más Elegido",
@@ -18,7 +18,7 @@
     "nombre": "Pata y Muslo de Pollo",
     "piezas": "x 1 kg",
     "descripcion": "Cuarto trasero fresco, ideal para horno, guisos o parrilla.",
-    "precio": 3978,
+    "precio": 3900,
     "categoria": "pollo",
     "etiquetas": [
       "Oferta",
@@ -32,7 +32,7 @@
     "nombre": "Pechuga Sin Hueso",
     "piezas": "x 1 kg",
     "descripcion": "Suprema limpia sin piel ni hueso, cortada fresca del día.",
-    "precio": 7957,
+    "precio": 7800,
     "categoria": "pollo",
     "etiquetas": [
       "Sin TACC",
@@ -46,7 +46,7 @@
     "nombre": "Milanesas de Pollo Preparadas",
     "piezas": "x 1 kg",
     "descripcion": "Fileteadas finas y rebozadas con pan rallado casero, listas para cocinar.",
-    "precio": 9079,
+    "precio": 8900,
     "categoria": "pollo",
     "etiquetas": [
       "Favorito"
@@ -59,7 +59,7 @@
     "nombre": "Alitas de Pollo Frescas",
     "piezas": "x 1 kg",
     "descripcion": "Alitas limpias ideales para hacer crocantes al horno o fritas.",
-    "precio": 3264,
+    "precio": 3200,
     "categoria": "pollo",
     "etiquetas": [
       "Fresco"
@@ -72,7 +72,7 @@
     "nombre": "Medallones de Pollo Caseros",
     "piezas": "x 4 u.",
     "descripcion": "Hamburguesas artesanales de pechuga de pollo condimentadas suave.",
-    "precio": 4692,
+    "precio": 4600,
     "categoria": "pollo",
     "etiquetas": [
       "Fresco"
